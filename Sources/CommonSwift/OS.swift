@@ -48,7 +48,7 @@ import Foundation
 public class OS
 {
   @available(OSX 10.13, *)
-  public class func spawn(_ args:[String]) -> [String]?
+  public class func spawn(_ args:[String], _ stringForInputPipe:String?) -> [String]?
   {
     if args.isEmpty
     {
@@ -58,10 +58,13 @@ public class OS
     {
       let outputPipe = Pipe()
       let errorPipe = Pipe()
+      let inputPipe = Pipe()
       let task = Process()
       task.executableURL = URL(fileURLWithPath: args[0])
       task.standardOutput = outputPipe
       task.standardError = errorPipe
+      task.standardInput = inputPipe
+      
       if(args.count > 1)
       {
         task.arguments = Array(args.dropFirst())
@@ -70,6 +73,11 @@ public class OS
       do 
       {
         try task.run()
+        if let inputString = stringForInputPipe
+        {
+          inputPipe.fileHandleForWriting.write(Data(inputString.utf8))
+          inputPipe.fileHandleForWriting.closeFile()
+        }
         let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
         let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
 
