@@ -86,6 +86,7 @@ public class OS
       }
       catch
       {
+				Log.error("OS.spawn fail: \(args)")
         return nil
       }
     }
