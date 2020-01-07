@@ -84,9 +84,9 @@ public class OS
         return [String(decoding: outputData, as: UTF8.self), 
                 String(decoding: errorData, as: UTF8.self)]
       }
-      catch
+      catch let error as NSError
       {
-				Log.error("OS.spawn fail: \(args)")
+				Log.error("OS.spawn \(args) fail: \(error.localizedDescription)")
         return nil
       }
     }
