@@ -86,26 +86,26 @@ public class OS
       }
       catch let error as NSError
       {
-				Log.error("OS.spawn \(args) fail: \(error.localizedDescription)")
+        Log.error("OS.spawn \(args) fail: \(error.localizedDescription)")
         return nil
       }
     }
   }
 	
-	@available(OSX 10.13, *)
-	public class func spawnAsync(_ args:[String], 
-	                             _ stringForInputPipe:String?, 
-															 _ resultNotifier:((String, String) -> Void)?) -> Void
-	{
-		DispatchQueue.global(qos: .background).async 
-		{
-			if let outputs = OS.spawn(args, stringForInputPipe),
-			   let stdOutput = outputs.first,
-			   let stdError = outputs.last,
-				 let notifyF = resultNotifier
-			{
-				notifyF(stdOutput, stdError)
-			}
-		}
-	}
+  @available(OSX 10.13, *)
+  public class func spawnAsync(_ args:[String], 
+                               _ stringForInputPipe:String?, 
+                               _ resultNotifier:((String, String) -> Void)?) -> Void
+  {
+     DispatchQueue.global(qos: .background).async 
+     {
+        if let outputs = OS.spawn(args, stringForInputPipe),
+           let stdOutput = outputs.first,
+           let stdError = outputs.last,
+           let notifyF = resultNotifier
+        {
+        	notifyF(stdOutput, stdError)
+        }
+     }
+  }
 }
