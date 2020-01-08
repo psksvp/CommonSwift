@@ -104,7 +104,7 @@ public class OS
            let stdError = outputs.last,
            let notifyF = resultNotifier
         {
-        	notifyF(stdOutput, stdError)
+          notifyF(stdOutput, stdError)
         }
      }
   }
