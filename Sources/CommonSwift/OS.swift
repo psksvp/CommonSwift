@@ -91,4 +91,21 @@ public class OS
       }
     }
   }
+	
+	@available(OSX 10.13, *)
+	public class func spawnAsync(_ args:[String], 
+	                             _ stringForInputPipe:String?, 
+															 _ resultNotifier:((String, String) -> Void)?) -> Void
+	{
+		DispatchQueue.global(qos: .background).async 
+		{
+			if let outputs = OS.spawn(args, stringForInputPipe),
+			   let stdOutput = outputs.first,
+			   let stdError = outputs.last,
+				 let notifyF = resultNotifier
+			{
+				notifyF(stdOutput, stdError)
+			}
+		}
+	}
 }
