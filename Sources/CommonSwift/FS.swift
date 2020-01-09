@@ -200,8 +200,8 @@ public class FS
       
       return nil
     }
-		
-		
+
+
     //////////////////////////////////////////////
     public func ioctlRead(request: UInt) -> UInt8?
     {

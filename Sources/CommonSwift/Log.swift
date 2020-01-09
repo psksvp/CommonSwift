@@ -48,16 +48,16 @@ public class Log
 {
   public class func error(_ msg:String) -> Void
   {
-    print("Error: \(msg)")
+    NSLog("Error: \(msg)")
   }
   
   public class func warn(_ msg:String) -> Void
   {
-    print("warn: \(msg)")
+    NSLog("warn: \(msg)")
   }
   
   public class func info(_ msg:String) -> Void
   {
-   print("info: \(msg)")
+    NSLog("info: \(msg)")
   }
 }
