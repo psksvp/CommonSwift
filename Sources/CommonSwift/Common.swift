@@ -51,6 +51,18 @@ public extension String
   {
     return self.trimmingCharacters(in: CharacterSet.controlCharacters)
   }
+
+  func intIndex(of s: String) -> Int?
+  {
+    if let r = self.range(of: s)
+    {
+      return self.distance(from: self.startIndex, to: r.lowerBound)
+    }
+    else
+    {
+      return nil
+    }
+  }
 }
 
 //func synchronized(_ syncedObj: Any, block: () -> ())
