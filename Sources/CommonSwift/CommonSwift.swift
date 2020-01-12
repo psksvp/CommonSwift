@@ -1,3 +1,4 @@
-struct CommonSwift {
+struct CommonSwift 
+{
     var text = "Hello, World!"
 }
