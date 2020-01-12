@@ -42,30 +42,26 @@ public class Machine<E: Hashable>
   public class State: Equatable, Hashable
   {
     private let name: String
-    private let action: (() -> Void)?
-    
-    var machine: Machine? = nil
+    private let action: ((Machine, E?) -> Void)?
     
     var idName: String
     {
       get {return name}
     }
     
-    init(name n: String,  withAction a: (() -> Void)? = nil)
+    init(name n: String,  withAction a: ((Machine, E?) -> Void)? = nil)
     {
       name = n
       action = a
     }
     
-    func runAction() -> Void
+    func runAction(inMachine m: Machine, withInput e: E? = nil) -> Void
     {
       if let a = action
       {
-        a()
+        a(m, e)
       }
     }
-		
-		
     
     public class final func == (lhs: State, rhs: State) -> Bool
     {
@@ -83,7 +79,7 @@ public class Machine<E: Hashable>
   private var currentState: State
   private var route = [State : [E : State]]()
 	
-	var current:State 
+	var current:State
 	{
 		get {return currentState}
 	}
@@ -97,42 +93,56 @@ public class Machine<E: Hashable>
   {
     startState = s
     currentState = startState
-    currentState.runAction()
+    currentState.runAction(inMachine: self)
   }
   
-  func reset()
+  func route(withInput e: E, fromState: State, toState: State)  -> Void
   {
-    currentState = startState
-    currentState.runAction()
-  }
-  
-  func route(withInput e: E, fromState: State, toState: State)
-  {
-		fromState.machine = self
     switch(route[fromState])
     {
       case .some(_) : route[fromState]![e] = toState
       case .none    : route[fromState] = [e : toState]
     }
   }
+	
+  func routes(withInputs e: [E], fromState f: State, toState t: State)  -> Void
+  {
+    for i in e
+		{
+			route(withInput: i, fromState: f, toState: t)
+		}
+  }
   
-  func run(withInput e: E)
+  func step(withInput e: E)  -> Void
   {
     guard let r = route[currentState] else
     {
-      Log.info("\(currentState.idName) is a dead end.")
+      Log.warn("\(currentState.idName) is a dead end.")
       return
     }
     
     guard let n = r[e] else
     {
-      Log.info("\(currentState.idName) does not response to input \(e)")
+      Log.warn("\(currentState.idName) does not response to input \(e)")
       return
     }
     
-    n.runAction()
-    currentState = n
+		currentState = n
+    n.runAction(inMachine: self, withInput: e)
   }
+	
+	func pass() -> Void
+	{
+    guard let r = route[currentState] else
+    {
+      Log.warn("\(currentState.idName) is a dead end.")
+      return
+    }
+		
+		let n = r.values.first!
+		currentState = n
+    n.runAction(inMachine: self)
+	}
   
   func printInfo() -> Void
   {
@@ -151,64 +161,121 @@ public class Machine<E: Hashable>
 }
 
 
-// class TestMachine: Machine<String>
-// {
-//    let idle = State(name: "idle")
-//    {
-//      print("idling")
-//    }
-//
-//    let watch = State(name: "watch")
-//    {
-//      print("watching")
-//    }
-//
-//    let found = State(name: "found")
-//    {
-//      print("I found it")
-//    }
-//
-//    init()
-//    {
-//      super.init(startState: idle)
-//      route(withInput: "#", fromState: idle, toState: watch)
-//      route(withInput: "\n", fromState: watch, toState: found)
-//    }
-// }
+
+class Calculator: Machine<String>
+{	
+	let numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]
+	let operators = ["+", "-", "*", "/"]	
+	
+	var registerA = ""
+	var registerB = ""
+	var registerO = ""
+	
+	func display() -> Void
+	{
+		print("------------")
+    print("A: \(registerA)")
+		print("B: \(registerB)")
+		print("O: \(registerO)")
+		print("current: \(self.current.idName)")
+	}
+	
+	func clear() -> Void
+	{
+		registerA = ""
+		registerB = ""
+	}
+	
+	let A = State(name: "A")
+	{
+		m, i in
+		let cal = m as! Calculator
+		if let input = i
+		{
+			if ".0123456789".contains(input)
+		  {
+		  	cal.registerA += input
+		  }
+			
+			if "+-*/".contains(input)
+		  {
+		  	cal.registerO = input
+		  }
+		}
+	}
+	
+	let B = State(name: "B")
+	{
+		m, i in
+		let cal = m as! Calculator
+		if let input = i
+		{
+			if "0123456789.".contains(input)
+		  {
+		  	cal.registerB += input
+		  }
+			
+			if "+-*/".contains(input)
+		  {
+		  	cal.registerO = input
+		  }
+
+		}
+	}
+	
+	let CLEAR = State(name: "CLEAR")
+	{
+		m, i in
+		let cal = m as! Calculator
+		cal.clear()
+		m.pass()
+	}
+	
+	let EXE = State(name: "EXE")
+	{
+		m, i in
+		let c = m as! Calculator
+		let a = Double(c.registerA)!
+		let b = Double(c.registerB)!
+		var r:Double = 0.0
+		switch(c.registerO)
+		{
+			case "+" : r = a + b
+			case "-" : r = a - b
+			case "*" : r = a * b
+			case "/" : r = a / b // fucking div by zero
+			default  : r = 0.0
+		}
+		c.registerA = "\(r)"
+		c.registerB = ""
+		c.registerO = ""
+		m.pass()
+	}
+	
+	init()
+	{
+		super.init(startState: A)
+		routes(withInputs: numbers, fromState: A, toState: A)
+		routes(withInputs: operators, fromState: A, toState: B)
+		routes(withInputs: numbers, fromState: B, toState: B)
+		routes(withInputs: ["C", "c"], fromState: A, toState: CLEAR)
+		routes(withInputs: ["C", "c"], fromState: B, toState: CLEAR)
+		route(withInput: "=", fromState: B, toState: EXE)
+		route(withInput: "", fromState: EXE, toState: A)
+		route(withInput: "", fromState: CLEAR, toState: A)
+	}
+}
 
 
+func runCalculator()
+{
+   let c = Calculator()
+	 c.display()
+	 for s in "10+21=*2="
+	 {
+	 	 c.step(withInput: String(s))
+		 c.display()
+	 }
+}
 
-// class Calculator: Machine
-// {
-// 	enum Operator
-// 	{
-// 		case Plus
-// 		case Minus
-// 		case Mul
-// 		case Div
-// 	}
-//
-// 	private var registerA = 0.0
-// 	private var currentOp:Operator? = nil
-// 	private var displayBuffer:String = ""
-//
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//runCalculator()
