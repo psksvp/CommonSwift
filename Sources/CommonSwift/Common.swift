@@ -63,6 +63,26 @@ public extension String
       return nil
     }
   }
+	
+	
+  // modified from https://stackoverflow.com/questions/40413218/swift-find-all-occurrences-of-a-substring	
+  func findAndLift(string: String, options mask: NSString.CompareOptions = []) -> [(Int, String)]
+  {
+     var indices = [(Int,String)]()
+     var searchStartIndex = self.startIndex
+
+     while searchStartIndex < self.endIndex,
+           let range = self.range(of: string, options: mask, range: searchStartIndex..<self.endIndex),
+           !range.isEmpty
+     {
+       let index = distance(from: self.startIndex, to: range.lowerBound)
+       let text = String(self[range])
+       indices.append((index, text))
+       searchStartIndex = range.upperBound
+     }
+
+     return indices
+  }
 }
 
 //func synchronized(_ syncedObj: Any, block: () -> ())
