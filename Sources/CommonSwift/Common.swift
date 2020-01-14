@@ -49,7 +49,7 @@ public extension String
 {
   func trim() -> String
   {
-    return self.trimmingCharacters(in: CharacterSet.controlCharacters)
+    return self.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   func intIndex(of s: String) -> Int?
