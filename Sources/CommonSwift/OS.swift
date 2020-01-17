@@ -48,7 +48,7 @@ import Foundation
 public class OS
 {
   @available(OSX 10.13, *)
-  public class func spawn(_ args:[String], _ stringForInputPipe:String?) -> [String]?
+  public class func spawn(_ args:[String], _ stringForInputPipe:String?) -> (stdout: String, stderr: String)?
   {
     if args.isEmpty
     {
@@ -81,8 +81,8 @@ public class OS
         let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
         let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
 
-        return [String(decoding: outputData, as: UTF8.self), 
-                String(decoding: errorData, as: UTF8.self)]
+        return (stdout: String(decoding: outputData, as: UTF8.self), 
+                stderr: String(decoding: errorData, as: UTF8.self))
       }
       catch let error as NSError
       {
@@ -99,12 +99,10 @@ public class OS
   {
      DispatchQueue.global(qos: .background).async 
      {
-        if let outputs = OS.spawn(args, stringForInputPipe),
-           let stdOutput = outputs.first,
-           let stdError = outputs.last,
+        if let (out, err) = OS.spawn(args, stringForInputPipe),
            let notifyF = resultNotifier
         {
-          notifyF(stdOutput, stdError)
+          notifyF(out, err)
         }
      }
   }

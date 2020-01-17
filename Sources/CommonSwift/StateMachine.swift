@@ -249,7 +249,6 @@ class Calculator: Machine<String>
 		c.registerA = "\(r)"
 		c.registerB = ""
 		c.registerO = ""
-		m.pass()
 	}
 	
 	init()
@@ -261,7 +260,8 @@ class Calculator: Machine<String>
 		routes(withInputs: ["C", "c"], fromState: A, toState: CLEAR)
 		routes(withInputs: ["C", "c"], fromState: B, toState: CLEAR)
 		route(withInput: "=", fromState: B, toState: EXE)
-		route(withInput: "", fromState: EXE, toState: A)
+		routes(withInputs: operators, fromState: EXE, toState: B)
+		routes(withInputs: ["C", "c"], fromState: EXE, toState: CLEAR)
 		route(withInput: "", fromState: CLEAR, toState: A)
 	}
 }
