@@ -81,8 +81,8 @@ public class OS
         let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
         let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
 
-        return (stdout: String(decoding: outputData, as: UTF8.self), 
-                stderr: String(decoding: errorData, as: UTF8.self))
+        return (stdout: String(decoding: outputData, as: UTF8.self)!, 
+                stderr: String(decoding: errorData, as: UTF8.self)!)
       }
       catch let error as NSError
       {
