@@ -45,7 +45,7 @@ public extension Comparable
   }
 }
 
-public extension String
+public extension StringProtocol
 {
   func trim() -> String
   {
@@ -83,6 +83,22 @@ public extension String
 
      return indices
   }
+	
+	//https://stackoverflow.com/questions/24092884/get-nth-character-of-a-string-in-swift-programming-language
+	subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
+	subscript(range: CountableRange<Int>) -> SubSequence 
+	{
+	    let startIndex = index(self.startIndex, offsetBy: range.lowerBound)
+	    return self[startIndex..<index(startIndex, offsetBy: range.count)]
+	}
+	subscript(range: ClosedRange<Int>) -> SubSequence 
+	{
+	    let startIndex = index(self.startIndex, offsetBy: range.lowerBound)
+	    return self[startIndex..<index(startIndex, offsetBy: range.count)]
+	}
+	subscript(range: CountablePartialRangeFrom<Int>) -> SubSequence { self[index(startIndex, offsetBy: range.lowerBound)...] }
+	subscript(range: PartialRangeThrough<Int>) -> SubSequence { self[...index(startIndex, offsetBy: range.upperBound)] }
+	subscript(range: PartialRangeUpTo<Int>) -> SubSequence { self[..<index(startIndex, offsetBy: range.upperBound)] }
 }
 
 //func synchronized(_ syncedObj: Any, block: () -> ())
