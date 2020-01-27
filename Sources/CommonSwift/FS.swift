@@ -106,16 +106,16 @@ public class FS
 		return true
 	}
 	
-  public class func applicationSupportDirectory(forName name: String, 
-	                                              createIfNotExists: Bool) -> String?
+  public class func applicationSupportPath(forName name: String, 
+	                                         createIfNotExists: Bool) -> String?
 	{
     do
     {
       let url = try FileManager.default.url(for: .applicationSupportDirectory,
-                                            in: .localDomainMask,
+                                            in: .userDomainMask,
                                             appropriateFor: nil,
                                             create: false)
-      let appDir = "\(url)\(name)"
+      let appDir = "\(url.path)/\(name)"
 			if !createDirectory(appDir, ignoreIfExists: true)
 			{
         return nil
@@ -129,10 +129,12 @@ public class FS
     }
 	}
 	
-	public class func supportPath(forAppName name: String, resourceName: String) -> String?
+	public class func applicationSupportPath(forName name: String, 
+	                                         andResourceName rsc: String, 
+																					 createIfNotExists: Bool = true) -> String?
 	{
-		guard let appDir = applicationSupportDirectory(forName: name, createIfNotExists: true) else {return nil}
-		let rscDir = "\(appDir)\(resourceName)"
+		guard let appDir = applicationSupportPath(forName: name, createIfNotExists: true) else {return nil}
+		let rscDir = "\(appDir)/\(rsc)"
 		if !createDirectory(rscDir, ignoreIfExists: true)
 		{
 			return nil
@@ -282,9 +284,33 @@ public class FS
       {
         return nil
       }
-    }
-    
-    
+    } 
   }
-  
+}
+
+class Log
+{
+	class func error(_ s: String)
+	{
+		print(s)
+	}
+	
+	class func info(_ s: String)
+	{
+		print(s)
+	}
+	
+	class func warn(_ s: String)
+	{
+		print(s)
+	}
+}
+
+if let m = FS.applicationSupportPath(forName: "MDEtcher", andResourceName: "previewCSS")
+{
+	print(m)
+}
+else
+{
+	print("fail")
 }
