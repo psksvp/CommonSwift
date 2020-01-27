@@ -45,6 +45,8 @@ public extension Comparable
   }
 }
 
+
+// What a mess. Clean it up!
 public extension StringProtocol
 {
   func trim() -> String
@@ -118,9 +120,3 @@ public extension StringProtocol
 }
 
 
-//func synchronized(_ syncedObj: Any, block: () -> ())
-//{
-//  objc_sync_enter(obj: syncedObj)
-//  block()
-//  objc_sync_exit(obj: syncedObj)
-//}

@@ -72,6 +72,73 @@ public class FS
       Log.error("FS.writeText Fail -> \(path)")
     }
   }
+	
+	public class func directoryExists(atPath p: String) -> Bool 
+	{
+	  var dir = ObjCBool(true)
+	  let s = FileManager.default.fileExists(atPath: p, isDirectory: &dir)
+	  return s && dir.boolValue
+	}
+	
+	public class func createDirectory(_ p: String) -> Bool
+	{
+		let fm = FileManager.default
+		do
+		{
+			let url = URL(fileURLWithPath: p, isDirectory: true)
+			try fm.createDirectory(at: url, withIntermediateDirectories: true)
+			return true
+		}
+		catch
+		{
+			Log.error("FS.createDirectory fail to create \(p)")
+			return false
+		}
+	}
+	
+	public class func createDirectory(_ p: String, ignoreIfExists: Bool) -> Bool
+	{
+		if !directoryExists(atPath: p)
+		{
+			return createDirectory(p)
+		}
+		
+		return true
+	}
+	
+  public class func applicationSupportDirectory(forName name: String, 
+	                                              createIfNotExists: Bool) -> String?
+	{
+    do
+    {
+      let url = try FileManager.default.url(for: .applicationSupportDirectory,
+                                            in: .localDomainMask,
+                                            appropriateFor: nil,
+                                            create: false)
+      let appDir = "\(url)\(name)"
+			if !createDirectory(appDir, ignoreIfExists: true)
+			{
+        return nil
+			}
+			return appDir
+    }
+    catch
+    {
+    	Log.error("FS.applicationSupportDirectory fail with -> \(name)")
+			return nil
+    }
+	}
+	
+	public class func supportPath(forAppName name: String, resourceName: String) -> String?
+	{
+		guard let appDir = applicationSupportDirectory(forName: name, createIfNotExists: true) else {return nil}
+		let rscDir = "\(appDir)\(resourceName)"
+		if !createDirectory(rscDir, ignoreIfExists: true)
+		{
+			return nil
+		}
+		return rscDir
+	}
   
   public class func contentsOfDirectory(_ path:String) -> [String]?
   {
