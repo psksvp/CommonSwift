@@ -47,6 +47,7 @@ public extension Comparable
 
 
 // What a mess. Clean it up!
+/*
 public extension StringProtocol
 {
   func trim() -> String
@@ -117,6 +118,6 @@ public extension StringProtocol
     let encodedString = NSString(data: data, encoding: String.Encoding.utf8.rawValue)!
     return encodedString.substring(with: NSMakeRange(1, encodedString.length - 2))
   }
-}
+} */
 
 

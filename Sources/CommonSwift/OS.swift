@@ -95,15 +95,16 @@ public class OS
   @available(OSX 10.13, *)
   public class func spawnAsync(_ args:[String], 
                                _ stringForInputPipe:String?, 
-                               _ resultNotifier:((String, String) -> Void)?) -> Void
+                               _ outputHandler:((String, String) -> Void)?) -> Void
   {
      DispatchQueue.global(qos: .background).async 
      {
         if let (out, err) = OS.spawn(args, stringForInputPipe),
-           let notifyF = resultNotifier
+           let notifyF = outputHandler
         {
           notifyF(out, err)
         }
      }
   }
-}
+  
+} //OS
