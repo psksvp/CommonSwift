@@ -48,7 +48,8 @@ import Foundation
 public class OS
 {
   @available(OSX 10.13, *)
-  public class func spawn(_ args:[String], _ stringForInputPipe:String?) -> (stdout: String, stderr: String)?
+  @discardableResult
+	public class func spawn(_ args:[String], _ stringForInputPipe:String?) -> (stdout: String, stderr: String)?
   {
     if args.isEmpty
     {
