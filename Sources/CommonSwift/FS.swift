@@ -288,29 +288,4 @@ public class FS
   }
 }
 
-// class Log
-// {
-// 	class func error(_ s: String)
-// 	{
-// 		print(s)
-// 	}
-//
-// 	class func info(_ s: String)
-// 	{
-// 		print(s)
-// 	}
-//
-// 	class func warn(_ s: String)
-// 	{
-// 		print(s)
-// 	}
-// }
-//
-// if let m = FS.applicationSupportPath(forName: "MDEtcher", andResourceName: "previewCSS")
-// {
-// 	print(m)
-// }
-// else
-// {
-// 	print("fail")
-// }
+
