@@ -8,14 +8,25 @@ public extension URL
   func relativePath(from base: URL) -> String?
   {
     // Ensure that both URLs represent files:
-    guard self.isFileURL && base.isFileURL  else
-    {
-      return nil
-    }
+		guard self.isFileURL &&
+		      FileManager.default.fileExists(atPath: self.path) else
+		{
+			NSLog("self is not a fileURL or it does not exists")
+			return nil
+		}
+		
+	  var isDir = ObjCBool(true)
+	  guard FileManager.default.fileExists(atPath: base.path, isDirectory: &isDir) &&
+		      isDir.boolValue else
+		{
+			NSLog("base is not a directory or it does not exists")
+			return nil
+		}			
+		
 
     // Remove/replace "." and "..", make paths absolute:
-    let destComponents = self.standardized.pathComponents
-    let baseComponents = base.standardized.pathComponents
+    let destComponents = self.resolvingSymlinksInPath().pathComponents
+    let baseComponents = base.resolvingSymlinksInPath().pathComponents
 
     // Find number of common path components:
     let i = Set(destComponents).intersection(Set(baseComponents)).count
