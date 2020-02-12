@@ -3,7 +3,7 @@ import Foundation
 // modified from 
 // https://stackoverflow.com/questions/48351839/swift-equivalent-of-rubys-pathname-relative-path-from
 // base is assumed to be a dir
-extension URL
+public extension URL
 {
   func relativePath(from base: URL) -> String?
   {
