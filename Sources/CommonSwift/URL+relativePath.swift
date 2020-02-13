@@ -29,7 +29,13 @@ public extension URL
     let baseComponents = base.resolvingSymlinksInPath().pathComponents
 
     // Find number of common path components:
-    let i = Set(destComponents).intersection(Set(baseComponents)).count
+    //let i = Set(destComponents).intersection(Set(baseComponents)).count
+		var i = 0
+		while i < destComponents.count && i < baseComponents.count
+		      && destComponents[i] == baseComponents[i]
+		{
+		   i += 1
+		}
 
     // Build relative path:
     let relComponents = Array(repeating: "..", count: baseComponents.count - i) +
