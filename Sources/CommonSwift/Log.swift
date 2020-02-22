@@ -46,18 +46,25 @@ import Foundation
 
 public class Log
 {
-  public class func error(_ msg:String) -> Void
+  public class func error(_ msg:String, 
+	                        _ function: String = #function,
+													_ line: Int = #line) -> Void
   {
-    NSLog("Error: \(msg)")
+    NSLog("Error(\(function):\(line)): \(msg) ")
   }
   
-  public class func warn(_ msg:String) -> Void
+  public class func warn(_ msg:String,
+	                       _ function: String = #function,
+												 _ line: Int = #line) -> Void
   {
-    NSLog("warn: \(msg)")
+    NSLog("warn(\(function):\(line)): \(msg)")
   }
   
-  public class func info(_ msg:String) -> Void
+  public class func info(_ msg:String,
+	                       _ function: String = #function,
+												 _ line: Int = #line) -> Void
   {
-    NSLog("info: \(msg)")
+    NSLog("info(\(function):\(line)): \(msg)")
   }
+	
 }
