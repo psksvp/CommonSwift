@@ -1,18 +1,18 @@
 import Foundation
 
-public extension String
+public extension StringProtocol
 {
 	@available(OSX 10.15, *)
   func isRangeInBound(_ range: NSRange) -> Bool
   {
-    guard let _ = Range(range, in: self) else {return false}
+    guard let _ = Range(range, in: self as! String) else {return false}
     return true
   }
   
 	@available(OSX 10.15, *)
   func substring(with nsrange: NSRange) -> Substring?
   {
-    guard let range = Range(nsrange, in: self) else { return nil }
+    guard let range = Range(nsrange, in: self as! String) else { return nil }
     return self[range] as? Substring
   }
 	
