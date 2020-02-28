@@ -1,6 +1,6 @@
 import Foundation
 
-public extension StringProtocol
+public extension String
 {
 	@available(OSX 10.15, *)
   func isRangeInBound(_ range: NSRange) -> Bool
