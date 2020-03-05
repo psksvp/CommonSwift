@@ -1,7 +1,7 @@
 import Foundation
 import WebKit
 
-extension WKWebView
+public extension WKWebView
 {
   func scrollToAnchor(_ s:String) -> Void
   {
@@ -107,6 +107,4 @@ extension WKWebView
     }
     return result ?? nil
   }
-  
-  
 }
