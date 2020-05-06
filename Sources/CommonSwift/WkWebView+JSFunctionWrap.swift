@@ -1,6 +1,8 @@
 import Foundation
 import WebKit
 
+#if os(macOS) 
+
 public extension WKWebView
 {
   func scrollToAnchor(_ s:String) -> Void
@@ -52,59 +54,31 @@ public extension WKWebView
   func syncEvaluateJavaScript(_ script: String) -> Any?
   {
     var result: Any?
-    var error: Error?
     var done = false
     let timeout = 3.0
-    if Thread.isMainThread
+
+    evaluateJavaScript(script)
     {
-      evaluateJavaScript(script)
+      (obj: Any?, error: Error?)->Void in
+      result = obj
+			done = true
+      if let e = error
+			{
+				Log.error(e as! String)
+			}
+    }
+		
+    while !done
+    {
+      let reason = CFRunLoopRunInMode(CFRunLoopMode.defaultMode, timeout, true)
+      if reason != CFRunLoopRunResult.handledSource
       {
-        (obj: Any?, err: Error?)->Void in
-        result = obj
-        error = err
-        done = true
-      }
-      while !done
-      {
-        let reason = CFRunLoopRunInMode(CFRunLoopMode.defaultMode, timeout, true)
-        if reason != CFRunLoopRunResult.handledSource
-        {
-            break
-        }
+          break
       }
     }
-    else
-    {
-        let condition: NSCondition = NSCondition()
-        DispatchQueue.main.async()
-        {
-          [weak self] in
-          self?.evaluateJavaScript(script)
-          {
-            (obj: Any?, err: Error?)->Void in
-            condition.lock()
-            result = obj
-            error = err
-            done = true
-            condition.signal()
-            condition.unlock()
-          }
-        }
-        condition.lock()
-        while !done
-        {
-          if !condition.wait(until: Date(timeIntervalSinceNow: timeout) as Date)
-          {
-            break
-          }
-        }
-        condition.unlock()
-    }
-    if error != nil { dump(error) }
-    if !done
-    {
-      Log.error("!Timeout to evaluate script: \(script)")
-    }
+   
     return result ?? nil
   }
 }
+
+#endif
