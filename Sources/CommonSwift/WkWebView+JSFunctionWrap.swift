@@ -61,13 +61,13 @@ public extension WKWebView
 
     evaluateJavaScript(script)
     {
-      (obj: Any?, error: Error?)->Void in
+      (obj: Any?, _: Error?)->Void in
       result = obj
 			done = true
-      if let e = error
-			{
-				Log.error(e as! String)
-			}
+//      if let e = error
+//			{
+//				//Log.error(e as! String)
+//			}
     }
 		
     while !done
