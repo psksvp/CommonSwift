@@ -75,13 +75,13 @@ public class Math
   ///////
   public class PID
   {
-    var setPoint: Double
-    var kP: Double
-    var kI: Double
-    var kD: Double
-    var integral: Double
-    var derivative: Double
-    var outputLimit: ClosedRange<Double>
+    public var setPoint: Double
+    public var kP: Double
+    public var kI: Double
+    public var kD: Double
+    public var integral: Double
+    public var derivative: Double
+    public var outputLimit: ClosedRange<Double>
     
     public init(setPoint:Double,
                 kP: Double,
