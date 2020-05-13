@@ -114,5 +114,37 @@ public class Math
     }
   }
   
+  public class PIDArray
+  {
+    public let pids:[PID]
+    
+    public init(_ p:[PID])
+    {
+      self.pids = p
+    }
+    
+    public func step(inputs: [Double]) -> [Double]
+    {
+      guard inputs.count == pids.count else
+      {
+        Log.error("inputs.count != pids.count")
+        return Array<Double>.init(repeating: 0, count: inputs.count)
+      }
+      
+      return pids.enumerated().map {$1.step(input: inputs[$0])}
+    }
+    
+    public func updateSetPoint(newSetPoints: [Double])
+    {
+      guard newSetPoints.count == pids.count else
+      {
+        Log.error("newSetPoints.count != pids.count")
+        return
+      }
+      
+      newSetPoints.enumerated().forEach{pids[$0].setPoint = $1}
+    }
+  }
+  
   
 }
