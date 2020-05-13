@@ -37,6 +37,7 @@
 
 public class Math
 {
+  private init() {}
   // fancy word type constrain.
 	//////////////
   public class NumericScaler<T: FloatingPoint & Comparable>
@@ -72,7 +73,7 @@ public class Math
   }// class NumericScaler
   
   ///////
-  struct PID
+  public class PID
   {
     var setPoint: Double
     var kP: Double
@@ -82,13 +83,13 @@ public class Math
     var derivative: Double
     var outputLimit: ClosedRange<Double>
     
-    init(setPoint:Double,
-         kP: Double,
-         kI: Double,
-         kD: Double,
-         outputLimit: ClosedRange<Double>,
-         integral: Double = 0.0,
-         derivative: Double = 0.0)
+    public init(setPoint:Double,
+                kP: Double,
+                kI: Double,
+                kD: Double,
+                outputLimit: ClosedRange<Double>,
+                integral: Double = 0.0,
+                derivative: Double = 0.0)
     {
       self.setPoint = setPoint
       self.kP = kP
@@ -99,7 +100,7 @@ public class Math
       self.outputLimit = outputLimit
     }
     
-    func step(input: Double)-> (delta: Double, pid:PID)
+    public func step(input: Double)-> (delta: Double, pid:PID)
     {
       let error = self.setPoint - input
       let p = self.kP * error
