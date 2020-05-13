@@ -100,7 +100,7 @@ public class Math
       self.outputLimit = outputLimit
     }
     
-    public func step(input: Double)-> (delta: Double, pid:PID)
+    public func step(input: Double)-> Double
     {
       let error = self.setPoint - input
       let p = self.kP * error
@@ -108,13 +108,9 @@ public class Math
       let nextIntegral = (self.integral + error).clamped(to: outputLimit)
       let nextDerivative = error
       let i = nextIntegral * self.kI
-      return (p + i + d, PID(setPoint: self.setPoint,
-                             kP: self.kP,
-                             kI: self.kI,
-                             kD: self.kD,
-                             outputLimit: self.outputLimit,
-                             integral: nextIntegral,
-                             derivative: nextDerivative))
+      self.integral = nextIntegral
+      self.derivative = nextDerivative
+      return p + i + d
     }
   }
   
