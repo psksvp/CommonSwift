@@ -35,6 +35,8 @@
  * By using the provided information, libraries or software, you solely take the risks of damaging your hardwares.
  */
 
+import Foundation
+
 public class Math
 {
   private init() {}
@@ -131,7 +133,17 @@ public class Math
         return Array<Double>.init(repeating: 0, count: inputs.count)
       }
       
-      return pids.enumerated().map {$1.step(input: inputs[$0])}
+      var output = Array<Double>.init(repeating: 0.0, count: inputs.count)
+      
+      DispatchQueue.concurrentPerform(iterations: inputs.count)
+      {
+        idx in
+        
+        output[idx] = self.pids[idx].step(input: inputs[idx])
+      }
+      
+      return output
+      //return pids.enumerated().map {$1.step(input: inputs[$0])}
     }
     
     public func updateSetPoint(newSetPoints: [Double])
@@ -142,7 +154,13 @@ public class Math
         return
       }
       
-      newSetPoints.enumerated().forEach{pids[$0].setPoint = $1}
+      DispatchQueue.concurrentPerform(iterations: newSetPoints.count)
+      {
+        idx in
+        self.pids[idx].setPoint = newSetPoints[idx]
+      }
+      
+      //newSetPoints.enumerated().forEach{pids[$0].setPoint = $1}
     }
   }
   
