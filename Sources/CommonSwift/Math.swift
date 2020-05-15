@@ -139,6 +139,7 @@ public class Math
       {
         idx in
         
+        print("doing \(idx)")
         output[idx] = self.pids[idx].step(input: inputs[idx])
       }
       
