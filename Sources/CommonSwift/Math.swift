@@ -142,7 +142,7 @@ public class Math
         print("doing \(idx)")
         output[idx] = self.pids[idx].step(input: inputs[idx])
       }
-      
+      print("done--")
       return output
       //return pids.enumerated().map {$1.step(input: inputs[$0])}
     }
