@@ -139,10 +139,10 @@ public class Math
       {
         idx in
         
-        print("doing \(idx)")
+        //print("doing \(idx)")
         output[idx] = self.pids[idx].step(input: inputs[idx])
       }
-      print("done--")
+      //print("done--")
       return output
       //return pids.enumerated().map {$1.step(input: inputs[$0])}
     }
