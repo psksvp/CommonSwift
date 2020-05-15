@@ -135,14 +135,17 @@ public class Math
       
       var output = Array<Double>.init(repeating: 0.0, count: inputs.count)
       
+      let syncQ = DispatchQueue(label: "syncQueue")
       DispatchQueue.concurrentPerform(iterations: inputs.count)
       {
         idx in
-        
-        //print("doing \(idx)")
-        output[idx] = self.pids[idx].step(input: inputs[idx])
+
+        let result = self.pids[idx].step(input: inputs[idx])
+        syncQ.sync // access to output array must be sync
+        {
+          output[idx] = result
+        }
       }
-      //print("done--")
       return output
       //return pids.enumerated().map {$1.step(input: inputs[$0])}
     }
