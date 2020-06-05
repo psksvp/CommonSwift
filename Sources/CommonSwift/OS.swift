@@ -109,3 +109,31 @@ public class OS
   }
   
 } //OS
+
+extension Array where Element == String
+{
+  func spawn() -> String?
+  {
+    if #available(OSX 10.13, *)
+    {
+      if let (stdout, stderr) = OS.spawn(self, nil)
+      {
+        if !stderr.isEmpty
+        {
+          Log.info(stderr)
+        }
+        return stdout
+      }
+      else
+      {
+        return nil
+      }
+    }
+    else
+    {
+      // Fallback on earlier versions
+      Log.error("spawn is unavailable")
+      return nil
+    }
+  }
+}

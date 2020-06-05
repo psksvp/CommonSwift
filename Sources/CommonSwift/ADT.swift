@@ -1,4 +1,4 @@
-class ADT
+struct ADT
 {
   class Graph<V, W>
   {
