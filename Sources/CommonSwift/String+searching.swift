@@ -32,4 +32,22 @@ public extension StringProtocol
 
      return indices
   }
+  
+  func regexLiftPattern(_ pattern: String) -> [(Int, String)]
+  {
+    var indices = [(Int,String)]()
+    var searchStartIndex = self.startIndex
+    
+    while searchStartIndex < self.endIndex,
+      let range = self.range(of: pattern, options: [.regularExpression], range: searchStartIndex..<self.endIndex),
+      !range.isEmpty
+    {
+      let index = distance(from: self.startIndex, to: range.lowerBound)
+      let text = String(self[range])
+      indices.append((index, text))
+      searchStartIndex = range.upperBound
+    }
+    
+    return indices
+  }
 }
