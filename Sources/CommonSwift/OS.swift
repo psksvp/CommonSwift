@@ -112,7 +112,7 @@ public class OS
 
 extension Array where Element == String
 {
-  func spawn() -> String?
+  public func spawn() -> String?
   {
     if #available(OSX 10.13, *)
     {
