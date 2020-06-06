@@ -112,6 +112,7 @@ public class OS
 
 extension Array where Element == String
 {
+  @discardableResult
   public func spawn() -> String?
   {
     if #available(OSX 10.13, *)
