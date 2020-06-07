@@ -113,11 +113,11 @@ public class OS
 extension Array where Element == String
 {
   @discardableResult
-  public func spawn() -> String?
+  public func spawn(stdInput: String? = nil) -> String?
   {
     if #available(OSX 10.13, *)
     {
-      if let (stdout, stderr) = OS.spawn(self, nil)
+      if let (stdout, stderr) = OS.spawn(self, stdInput)
       {
         if !stderr.isEmpty
         {
