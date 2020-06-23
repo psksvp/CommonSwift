@@ -10,6 +10,7 @@ let package = Package(
         .library(
             name: "CommonSwift",
             targets: ["CommonSwift"]),
+        .executable(name: "Scratch", targets: ["Scratch"])		
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -24,5 +25,8 @@ let package = Package(
         .testTarget(
             name: "CommonSwiftTests",
             dependencies: ["CommonSwift"]),
+        .target(
+               name: "Scratch",
+               dependencies: ["CommonSwift"]),
     ]
 )

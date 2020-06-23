@@ -46,11 +46,17 @@ import Foundation
 
 public class Log
 {
+  private init() {}
+  public static var throwOnError = false
   public class func error(_ msg:String, 
 	                        _ function: String = #function,
 													_ line: Int = #line) -> Void
   {
     NSLog("Error(\(function):\(line)): \(msg) ")
+    if throwOnError
+    {
+      fatalError(msg)
+    }
   }
   
   public class func warn(_ msg:String,
