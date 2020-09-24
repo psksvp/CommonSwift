@@ -1,32 +1,41 @@
 import Foundation
 import CommonSwift
 
-print("Hello me")
 
-class JupiterAces : ASM
+main()
+
+func main()
 {
-  let counter = ASM.state("counter", 0)
-  
-  init()
+  let port = SerialPort(path: "/dev/cu.usbmodem14201", baud: .b9600)
+  //Thread.sleep(forTimeInterval: 1000)
+  print(port.readLine())
+  while true
   {
-    super.init([counter])
-  }
-  
-  override func step() -> Bool
-  {
-    if counter[] > 10
+    print("Enter Text:")
+    if let s = readLine()
     {
-      return false
+      if 0 == s.count
+      {
+        break
+      }
+      port.writeLine(s)
     }
     else
     {
-      counter[] = counter[] + 1
-      print(counter[])
-      return true
+      print("kb readLine error")
+    }
+    
+    Thread.sleep(forTimeInterval: 1)
+    
+    if let r = port.readLine()
+    {
+      print("read \(r)")
+    }
+    else
+    {
+      print("read fail")
     }
   }
+  
+  print("exiting")
 }
-
-let j = JupiterAces()
-
-j.run()

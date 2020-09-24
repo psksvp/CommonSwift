@@ -46,6 +46,34 @@ import Foundation
 
 public class FS
 {
+  public class func readDictionary<K,V>(fromLocalPath path:String) -> [K:V]?
+  {
+    func onError()
+    {
+      Log.error("error reading dictionary from path: \(path)")
+    }
+    guard let dict = NSDictionary(contentsOf: URL(fileURLWithPath:path)) as? [K:V] else {return nil}
+    return dict
+  }
+  
+  @available(OSX 10.13, *)
+  public class func writeDictionary<K,V>(_ d: [K:V], toLocalPath path:String)
+  {
+    do
+    {
+      #if os(macOS)
+      try NSDictionary(dictionary: d).write(to: URL(fileURLWithPath:path))
+      #else
+      try NSDictionary(dictionary: d).write(to: URL(fileURLWithPath:path), atomically: true)
+      #endif
+    }
+    catch
+    {
+      print("Model fail to write \(path)")
+    }
+  }
+  
+  
   public class func readText(fromLocalPath path:String) -> String?
   {
     do

@@ -110,14 +110,14 @@ public class OS
   
 } //OS
 
-extension Array where Element == String
+extension Collection where Element == String
 {
   @discardableResult
   public func spawn(stdInput: String? = nil) -> String?
   {
     if #available(OSX 10.13, *)
     {
-      if let (stdout, stderr) = OS.spawn(self, stdInput)
+      if let (stdout, stderr) = OS.spawn(self as! [String], stdInput)
       {
         if !stderr.isEmpty
         {

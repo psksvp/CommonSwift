@@ -120,12 +120,12 @@ public class SerialPort
   }
   
   private let fileID:Int32
-  private var readBuffer = Buffer<UInt8>(capacity: 10)
   
   public init(path: String, baud: Baud = .b4800,
                             bitSize: BitSize = .eight,
                             parity: Parity = .none)
   {
+    Log.info("about to open \(path) for serial read & write")
 #if os(macOS)
     self.fileID = open(path, O_RDWR | O_NOCTTY | O_EXLOCK)
 #elseif os(Linux)
@@ -137,6 +137,7 @@ public class SerialPort
     }
     else
     {
+      Log.info("Serial port \(path) opened")
       var config = termios()
       tcgetattr(fileID, &config)
       cfsetspeed(&config, baud.value)
@@ -158,12 +159,25 @@ public class SerialPort
     }
   }
   
-  private func fillReadBuffer() -> Void
+  public func read() -> UInt8?
   {
-    if self.readBuffer.empty,
-       let r = read(size: self.readBuffer.capacity)
+    guard -1 != fileID else {return nil }
+    
+    var buf: UInt8 = 0
+    
+#if os(Linux)
+    let bytesRead = SwiftGlibc.read(fileID, &buf, 1)
+#elseif os(macOS)
+    let bytesRead = Darwin.read(fileID, &buf, 1)
+#endif
+    
+    if bytesRead > 0
     {
-      self.readBuffer.add(r)
+      return buf
+    }
+    else
+    {
+      return nil
     }
   }
   
@@ -219,44 +233,41 @@ public class SerialPort
 //////////////////////////////////////////////////////////////////
 extension SerialPort
 {
+  public func writeLine(_ s:String, maxTry: Int = 100)
+  {
+    let a: [UInt8] = Array((s.last == "\n" ? s : "\(s)\n").utf8)
+    var len = self.write(data: a)
+    var n = 0
+    while len < a.count && n < maxTry
+    {
+      len = self.write(data: Array(a.dropFirst(len)))
+      print(len)
+      n = n + 1
+    }
+    
+    if n >= maxTry && len != a.count
+    {
+      Log.error("SerialPort.writeLine fail..")
+    }
+  }
+  
   /**
 
    */
-  public func readLine(maxPerLine: Int = 255) -> String?
+  public func readLine(lineEnd: String = "\r\n",
+                       maxTry: Int = 100) -> String?
   {
-    func readOne() -> UInt8?
-    {
-      fillReadBuffer()
-      if false == self.readBuffer.empty
-      {
-        return self.readBuffer.consume()
-      }
-      else
-      {
-        return nil
-      }
-    }
-    
-    self.readBuffer.capacity = maxPerLine
-    
     var line = ""
-    var charCount = 0
     var loopCounter = 0
-    let maxTry = maxPerLine * 2
     while(loopCounter < maxTry)
     {
       loopCounter = loopCounter + 1
-      if let c = readOne()
+      if let c = read()
       {
-        let m = Character(Unicode.Scalar(c))
-        if "\n" == m || "\r" == m || maxPerLine == charCount
+        line += String(Character(Unicode.Scalar(c)))
+        if line.contains(lineEnd)
         {
           return line.trim()
-        }
-        else
-        {
-          line += String(m)
-          charCount = charCount + 1
         }
       }
       else
