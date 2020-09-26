@@ -83,11 +83,13 @@ public class Math
     public var kD: Double
     public var integral: Double
     public var derivative: Double
+    public var outputLimit: ClosedRange<Double>
     
     public init(setPoint:Double,
                 kP: Double,
                 kI: Double,
                 kD: Double,
+                outputLimit: ClosedRange<Double>,
                 integral: Double = 0.0,
                 derivative: Double = 0.0)
     {
@@ -95,6 +97,7 @@ public class Math
       self.kP = kP
       self.kI = kI
       self.kD = kD
+      self.outputLimit = outputLimit
       self.integral = integral
       self.derivative = derivative
     }
@@ -104,7 +107,7 @@ public class Math
       let error = self.setPoint - input
       let p = self.kP * error
       let d = self.kD * (error - self.derivative)
-      let nextIntegral = self.integral + error
+      let nextIntegral = (self.integral + error).clamped(to: outputLimit)
       let nextDerivative = error
       let i = nextIntegral * self.kI
       self.integral = nextIntegral
