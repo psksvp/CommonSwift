@@ -33,21 +33,21 @@ public extension StringProtocol
      return indices
   }
   
-  func regexLiftPattern(_ pattern: String) -> [(Int, String)]
+  func regexLift(usingPattern pattern: String) -> [String]
   {
-    var indices = [(Int,String)]()
-    var searchStartIndex = self.startIndex
-    
-    while searchStartIndex < self.endIndex,
-      let range = self.range(of: pattern, options: [.regularExpression], range: searchStartIndex..<self.endIndex),
-      !range.isEmpty
+    var result = [String]()
+    let regex = try? NSRegularExpression(pattern: pattern, options:[])
+    for (_, mmBlock) in self.liftRegexPattern(pattern)
     {
-      let index = distance(from: self.startIndex, to: range.lowerBound)
-      let text = String(self[range])
-      indices.append((index, text))
-      searchStartIndex = range.upperBound
+      if let match = regex?.firstMatch(in: mmBlock,
+                                       options: [],
+                                       range: NSRange(mmBlock.startIndex..<mmBlock.endIndex, in: mmBlock)),
+         let range = Range(match.range(at: 1), in: mmBlock)
+      {
+        result.append(String(mmBlock[range]))
+      }
     }
     
-    return indices
+    return result
   }
 }
