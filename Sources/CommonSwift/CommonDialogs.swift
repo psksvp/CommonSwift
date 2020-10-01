@@ -5,20 +5,22 @@
 //  Created by psksvp on 1/10/20.
 //
 
+#if os(macOS)
+
 import Foundation
 
 @discardableResult
-func osascriptRun(_ code: String) -> String?
+public func osascriptRun(_ code: String) -> String?
 {
   return ["/usr/bin/osascript"].spawn(stdInput: code)
 }
 
-class CommonDialogs
+public class CommonDialogs
 {
   private init() {}
   
-  class func listChooser(_ ls: [String],
-                        title: String = "Select One" ) -> Int?
+  public class func listChooser(_ ls: [String],
+                                title: String = "Select One" ) -> Int?
   {
     let script = """
     set ls to {\(ls.map {"\"\($0)\""}.joined(separator: ","))}
@@ -31,7 +33,7 @@ class CommonDialogs
     return ls.firstIndex(where: {$0 == selected.trim()})
   }
   
-  class func textInput(prompt: String = "Plase Enter text") -> String?
+  public class func textInput(prompt: String = "Plase Enter text") -> String?
   {
     let script = """
     set r to display dialog "\(prompt)" default answer "" with icon note
@@ -44,12 +46,12 @@ class CommonDialogs
     return String(response[m.upperBound ..< response.endIndex])
   }
   
-  class func showText(_ s: String)
+  public class func showText(_ s: String)
   {
     osascriptRun("display dialog \"\(s)\"")
   }
   
-  class func chooseFile(prompt: String = "Plase choose a file:") -> String?
+  public class func chooseFile(prompt: String = "Plase choose a file:") -> String?
   {
     let script = """
     set r to choose file name with prompt "\(prompt)"
@@ -58,7 +60,7 @@ class CommonDialogs
     return "/Volumes/\(r.replacingOccurrences(of: ":", with: "/"))"
   }
   
-  class func chooseColor() -> (Float32, Float32, Float32)?
+  public class func chooseColor() -> (Float32, Float32, Float32)?
   {
     guard let r = osascriptRun("set theColor to choose color default color {0, 65535, 0}")
     else {return nil}
@@ -72,4 +74,4 @@ class CommonDialogs
   }
 }
 
-
+#endif
