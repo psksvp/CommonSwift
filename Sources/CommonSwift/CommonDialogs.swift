@@ -4,7 +4,7 @@
 //
 //  Created by psksvp on 1/10/20.
 //
-#if os(macOS)
+
 import Foundation
 
 @discardableResult
@@ -72,4 +72,4 @@ class CommonDialogs
   }
 }
 
-#endif
+
