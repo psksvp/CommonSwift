@@ -29,6 +29,8 @@ public class CommonDialogs
 
     """
     
+    print(script)
+    
     guard let selected = osascriptRun(script) else {return nil}
     return ls.firstIndex(where: {$0 == selected.trim()})
   }
