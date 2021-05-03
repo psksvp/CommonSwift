@@ -45,10 +45,133 @@
 
 import Foundation
 
-public class Bits
+
+/**
+ 
+ */
+public func hex<T: FixedWidthInteger>(_ n: T) -> String
 {
-  public class func twoUInt8ToUInt16(high: UInt8, low: UInt8) -> UInt16
+  let leadingZeros = (n.bitWidth / 8) * 2
+  return String(format:"0x%0\(leadingZeros)X", n as! CVarArg)
+}
+
+/**
+ 
+ */
+public func hex<T: FixedWidthInteger>(_ n: [T]) -> [String]
+{
+  n.map {hex($0)}
+}
+
+/**
+ 
+ */
+public func binary<T: FixedWidthInteger>(_ n: T) -> String
+{
+  let bin = String(n, radix:2)
+  let padding = n.bitWidth - bin.count
+  if padding > 0
   {
-    return UInt16(((low & 0xFF) << 8) | (high & 0xFF))
+    return "\(String(repeating: "0", count: padding))\(bin)"
+  }
+  else
+  {
+    return bin
   }
 }
+
+/**
+ 
+ */
+public extension UInt16
+{
+  init(_ hi: UInt8, _ lo: UInt8)
+  {
+    self.init( (UInt16(hi) << 8) | UInt16(lo) )
+  }
+  
+  func clearHiBits() -> UInt16
+  {
+    return self & 0x00ff
+  }
+  
+  func clearLoBits() -> UInt16
+  {
+    return self & 0xff00
+  }
+  
+  var bytes: (hi:UInt8, lo:UInt8)
+  {
+    return (UInt8(self >> 8), UInt8(self.clearHiBits()))
+  }
+  
+  var byteArray: [UInt8]
+  {
+    let (hi, lo) = self.bytes
+    return [hi, lo]
+  }
+}
+
+//
+//  BitVector.swift
+//
+//
+//  Created by psksvp on 28/10/20.
+//
+
+
+public class BitVector<T: FixedWidthInteger> : CustomStringConvertible
+{
+  private var rawValue: T
+  
+  public var value: T {rawValue}
+  
+  public init(_ r: T)
+  {
+    rawValue = r
+  }
+  
+  public func clear()
+  {
+    rawValue = 0
+  }
+  
+  public func set(_ r: T)
+  {
+    rawValue = r
+  }
+  
+  public subscript(_ i: T) -> T
+  {
+    get
+    {
+      assert(Int(i) < rawValue.bitWidth)
+      let bit: T = 1 << i
+      return bit & rawValue
+    }
+    set(newValue)
+    {
+      assert(Int(i) < rawValue.bitWidth)
+      let bit: T = 1 << i
+      rawValue = newValue != 0 ? rawValue | bit : rawValue & (bit ^ 0xff)
+    }
+  }
+  
+  public var description: String
+  {
+    let bin = String(rawValue, radix:2)
+    let padding = rawValue.bitWidth - bin.count
+    if padding > 0
+    {
+      return "\(String(repeating: "0", count: padding))\(bin)"
+    }
+    else
+    {
+      return bin
+    }
+  }
+}
+
+
+
+
