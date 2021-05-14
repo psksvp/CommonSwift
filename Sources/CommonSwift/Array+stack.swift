@@ -19,8 +19,5 @@ extension Array
     return self.removeLast()
   }
   
-  public func top() -> Element?
-  {
-    return self.last
-  }
+  var top: Element? {return self.last}
 }
