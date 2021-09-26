@@ -2,6 +2,48 @@ import Foundation
 import CommonSwift
 import Cocoa
 
+
+if #available(OSX 10.13, *)
+{
+  testSpawnInteractive()
+}
+else
+{
+  // Fallback on earlier versions
+}
+
+@available(OSX 10.13, *)
+func testSpawnInteractive()
+{
+  let sw = OS.SpawnInteractive(["/usr/bin/swift"])
+  {
+    (stdOut, stdErr) -> () in
+    
+    print(" \(stdOut)   \(stdErr) ")
+  }
+  
+  var running = true
+  
+  DispatchQueue.global(qos: .background).async
+  {
+    while running
+    {
+      print("enter > ")
+      if let s = readLine(),
+         s.count > 0
+      {
+        sw.pipe(s)
+      }
+      else
+      {
+        running = !running
+      }
+    }
+  }
+  
+  RunLoop.main.run()
+}
+
 //main()
 //
 //func main()
