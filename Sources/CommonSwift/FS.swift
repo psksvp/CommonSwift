@@ -100,43 +100,43 @@ public class FS
       Log.error("FS.writeText Fail -> \(path)")
     }
   }
-	
-	public class func directoryExists(atPath p: String) -> Bool 
-	{
-	  var dir = ObjCBool(true)
-	  let s = FileManager.default.fileExists(atPath: p, isDirectory: &dir)
-	  return s && dir.boolValue
-	}
-	
-	public class func createDirectory(_ p: String) -> Bool
-	{
-		let fm = FileManager.default
-		do
-		{
-			let url = URL(fileURLWithPath: p, isDirectory: true)
-			try fm.createDirectory(at: url, withIntermediateDirectories: true)
-			return true
-		}
-		catch
-		{
-			Log.error("FS.createDirectory fail to create \(p)")
-			return false
-		}
-	}
-	
-	public class func createDirectory(_ p: String, ignoreIfExists: Bool) -> Bool
-	{
-		if !directoryExists(atPath: p)
-		{
-			return createDirectory(p)
-		}
-		
-		return true
-	}
-	
-  public class func applicationSupportPath(forName name: String, 
-	                                         createIfNotExists: Bool) -> String?
-	{
+ 
+ public class func directoryExists(atPath p: String) -> Bool
+ {
+   var dir = ObjCBool(true)
+   let s = FileManager.default.fileExists(atPath: p, isDirectory: &dir)
+   return s && dir.boolValue
+ }
+ 
+ public class func createDirectory(_ p: String) -> Bool
+ {
+  let fm = FileManager.default
+  do
+  {
+    let url = URL(fileURLWithPath: p, isDirectory: true)
+    try fm.createDirectory(at: url, withIntermediateDirectories: true)
+    return true
+  }
+  catch
+  {
+    Log.error("FS.createDirectory fail to create \(p)")
+    return false
+  }
+ }
+ 
+ public class func createDirectory(_ p: String, ignoreIfExists: Bool) -> Bool
+ {
+   if !directoryExists(atPath: p)
+   {
+    return createDirectory(p)
+   }
+ 
+   return true
+ }
+ 
+  public class func applicationSupportPath(forName name: String,
+                                          createIfNotExists: Bool) -> String?
+  {
     do
     {
       let url = try FileManager.default.url(for: .applicationSupportDirectory,
@@ -159,7 +159,7 @@ public class FS
 	
 	public class func applicationSupportPath(forName name: String, 
 	                                         andResourceName rsc: String, 
-																					 createIfNotExists: Bool = true) -> String?
+                                           createIfNotExists: Bool = true) -> String?
 	{
 		guard let appDir = applicationSupportPath(forName: name, createIfNotExists: true) else {return nil}
 		let rscDir = "\(appDir)/\(rsc)"
