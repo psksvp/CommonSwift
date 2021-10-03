@@ -189,7 +189,7 @@ public class SerialPort
     if(-1 != fileID)
     {
       var rawBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: size)
-      defer { rawxBuffer.deallocate() }
+      defer { rawBuffer.deallocate() }
 #if os(Linux)      
       let bytesRead = SwiftGlibc.read(fileID, rawBuffer, size)
 #elseif os(macOS)
