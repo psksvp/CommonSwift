@@ -8,22 +8,22 @@
 import Foundation
 
 
-class Cache<K : Hashable, V>
+open class Cache<K : Hashable, V>
 {
   private var storage = [K : V]()
   private let generator: (K)->V
   
-  init(_ f: @escaping (K)->V)
+  public init(_ f: @escaping (K)->V)
   {
     self.generator = f
   }
   
-  subscript(_ key: K) -> V
+  open subscript(_ key: K) -> V
   {
     return get(key)
   }
   
-  func get(_ key: K) -> V
+  open func get(_ key: K) -> V
   {
     if let val = self.storage[key]
     {
@@ -37,14 +37,14 @@ class Cache<K : Hashable, V>
     }
   }
   
-  func invalidate(_ key: K)
+  open func invalidate(_ key: K)
   {
     guard let _ = self.storage[key] else {return}
     
     self.storage.removeValue(forKey: key)
   }
   
-  func invalidateAll()
+  open func invalidateAll()
   {
     self.storage.removeAll(keepingCapacity: false)
   }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Array where Element: Equatable
+public extension Array where Element: Equatable
 {
   mutating func append(_ e: Element, withLimit limit: Int)
   {
