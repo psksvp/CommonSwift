@@ -164,6 +164,17 @@ public struct OS
     {
       self.inputPipe.fileHandleForWriting.write("\(s)\n".data(using: .utf8)!)
     }
+    
+    public func pipe(bytes: [UInt8])
+    {
+      let d = Data(bytes)
+      self.inputPipe.fileHandleForWriting.write(d)
+    }
+    
+    public func interrupt()
+    {
+      task.interrupt()
+    }
 
   }
   

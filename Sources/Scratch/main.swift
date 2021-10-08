@@ -15,7 +15,7 @@ else
 @available(OSX 10.13, *)
 func testSpawnInteractive()
 {
-  let sw = OS.SpawnInteractive(["/usr/bin/swift"])
+  let sw = OS.SpawnInteractive(["/Users/psksvp/Local/python/bin/python3", "-m", "http.server", "8001"]) //(["/usr/bin/swift"])
   {
     (stdOut, stdErr) -> () in
     
@@ -32,7 +32,7 @@ func testSpawnInteractive()
       if let s = readLine(),
          s.count > 0
       {
-        sw.pipe(s)
+        sw.interrupt()
       }
       else
       {
