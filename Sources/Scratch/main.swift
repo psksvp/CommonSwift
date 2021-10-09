@@ -1,32 +1,63 @@
 import Foundation
 import CommonSwift
-               
-//if let lines = sshRemoteRun(command: ["cd", "workspace", "&&", "ls", "-l"],
-//                      keyFile: "/Users/psksvp/.ssh/joseon",
-//                   remoteHost: "psksvp@joseon.local")
-//{
-//  for l in lines.components(separatedBy: "\n")
-//  {
-//    print(l)
-//  }
-//}
-//else
-//{
-//  print("fail")
-//}
-
-
-
-if #available(OSX 10.13, *)
+    
+  
+testInterativeRemoteRun()
+  
+  
+func testRemoteRun()
 {
-  testSpawnInteractive()
-}
-else
-{
-  // Fallback on earlier versions
+  if let lines = OS.remoteRun(command: ["cd", "workspace", "&&", "ls", "-l"],
+                                 keyFile: "/Users/psksvp/.ssh/joseon",
+                              remoteHost: "psksvp@joseon.local")
+  {
+    for l in lines.components(separatedBy: "\n")
+    {
+      print(l)
+    }
+  }
+  else
+  {
+    print("fail")
+  }
 }
 
-@available(OSX 10.13, *)
+func testInterativeRemoteRun()
+{
+  let sw = OS.interactiveRemoteRun(command: ["/home/psksvp/.local/swift/usr/bin/swift"],
+                                   keyFile: "/Users/psksvp/.ssh/joseon",
+                                remoteHost: "psksvp@joseon.local")
+  {
+    (s, t) -> () in
+    
+    switch t
+    {
+      case .stdOut : print("stdOut: \(s)")
+      case .stdError : print("stdErr: \(s)")
+    }
+   
+  }
+
+  var running = true
+
+  while running //&& sw.running
+  {
+    if let s = readLine(),
+       s.count > 0,
+       "quit" != s
+    {
+      sw.sendInput(s)
+    }
+    else
+    {
+      sw.interrupt()
+      running = !running
+    }
+  }
+  
+  print("exiting")
+}
+
 func testSpawnInteractive()
 {
   let sw = OS.SpawnInteractive(["/Users/psksvp/Local/python/bin/python3", "-m", "http.server", "8001"]) //(["/usr/bin/swift"])
@@ -47,20 +78,14 @@ func testSpawnInteractive()
   {
     print("enter > ")
     if let s = readLine(),
-       s.count > 0
+       s.count > 0,
+       "quit" != s
     {
-      if "quit" == s
-      {
-        sw.interrupt()
-        running = false
-      }
-      else
-      {
-        sw.sendInput(s)
-      }
+      sw.sendInput(s)
     }
     else
     {
+      sw.interrupt()
       running = !running
     }
   }

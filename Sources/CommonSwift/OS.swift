@@ -51,6 +51,12 @@ public struct OS
 {
   private init() {}
   
+  public enum StandardOutputKind
+  {
+    case stdOut
+    case stdError
+  }
+  
   @available(OSX 10.13, *)
   @discardableResult
 	public static func spawn(_ args:[String], _ stringForInputPipe:String?) -> (stdout: String, stderr: String)?
@@ -100,24 +106,18 @@ public struct OS
   @available(OSX 10.13, *)
   public class SpawnInteractive
   {
-    public enum OutputKind
-    {
-      case stdOut
-      case stdError
-    }
-  
     let process = Process()
     let outputPipe = Pipe()
     let errorPipe = Pipe()
     let inputPipe = Pipe()
-    let fOutput: (String, OutputKind) -> ()
+    let fOutput: (String, StandardOutputKind) -> ()
     
     public var running: Bool
     {
       process.isRunning
     }
 
-    public init(_ args:[String], fOutput f:@escaping (String, OutputKind) -> ())
+    public init(_ args:[String], fOutput f:@escaping (String, StandardOutputKind) -> ())
     {
       fOutput = f
       process.executableURL = URL(fileURLWithPath: args[0])
@@ -184,41 +184,50 @@ public struct OS
 
   }
   
-  public func sshRemoteRun(command: [String],
-                           keyFile: String,
-                        remoteHost: String,
-                        sshBinPath: String = "/usr/bin/ssh") -> String?
+  @available(OSX 10.13, *)
+  public static func remoteRun(command: [String],
+                               keyFile: String,
+                            remoteHost: String,
+                            sshBinPath: String = "/usr/bin/ssh") -> String?
   {
     ([sshBinPath, "-i", keyFile, remoteHost] + command).spawn()
   }
+  
+  @available(OSX 10.13, *)
+  public static func interactiveRemoteRun(command: [String],
+                                          keyFile: String,
+                                       remoteHost: String,
+                                       sshBinPath: String = "/usr/bin/ssh",
+                                        fOutput f:@escaping (String, OS.StandardOutputKind) -> ()) -> SpawnInteractive
+  {
+    ([sshBinPath, "-i", keyFile, remoteHost] + command).spawnInteractive(fOutput: f)
+  }
 } //OS
 
-extension Collection where Element == String
+
+@available(OSX 10.13, *)
+public extension Collection where Element == String
 {
   @discardableResult
-  public func spawn(stdInput: String? = nil) -> String?
+  func spawn(stdInput: String? = nil) -> String?
   {
-    if #available(OSX 10.13, *)
+    if let (stdout, stderr) = OS.spawn(self as! [String], stdInput)
     {
-      if let (stdout, stderr) = OS.spawn(self as! [String], stdInput)
+      if !stderr.isEmpty
       {
-        if !stderr.isEmpty
-        {
-          Log.info(stderr)
-        }
-        return stdout
+        Log.info(stderr)
       }
-      else
-      {
-        return nil
-      }
+      return stdout
     }
     else
     {
-      // Fallback on earlier versions
-      Log.error("spawn is unavailable")
       return nil
     }
+  }
+  
+  func spawnInteractive(fOutput f:@escaping (String, OS.StandardOutputKind) -> ()) -> OS.SpawnInteractive
+  {
+    OS.SpawnInteractive(self as! [String], fOutput: f)
   }
 }
 

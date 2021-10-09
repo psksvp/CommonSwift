@@ -9,12 +9,14 @@
 
 import Foundation
 
+@available(OSX 10.13, *)
 @discardableResult
 public func osascriptRun(_ code: String) -> String?
 {
   return ["/usr/bin/osascript"].spawn(stdInput: code)
 }
 
+@available(OSX 10.13, *)
 public class CommonDialogs
 {
   private init() {}
