@@ -96,76 +96,77 @@ public struct OS
       }
     }
   }
-	
-  @available(OSX 10.13, *)
 
+  @available(OSX 10.13, *)
   public class SpawnInteractive
   {
+    public enum OutputKind
+    {
+      case stdOut
+      case stdError
+    }
+  
+    let process = Process()
     let outputPipe = Pipe()
     let errorPipe = Pipe()
     let inputPipe = Pipe()
-    let task = Process()
-    let outputHandler: (String, String) -> ()
-
-    private var  notID: Any?
-
-
-    public init(_ args:[String], outputHandler f:@escaping (String, String) -> ())
+    let fOutput: (String, OutputKind) -> ()
+    
+    public var running: Bool
     {
-      outputHandler = f
-      task.executableURL = URL(fileURLWithPath: args[0])
-      task.standardOutput = outputPipe
-      task.standardError = errorPipe
-      task.standardInput = inputPipe
-      if(args.count > 1) {  task.arguments = Array(args.dropFirst()) }
-
-      notID = NotificationCenter.default.addObserver(forName: .NSFileHandleDataAvailable, object: nil, queue: OperationQueue.main)
-              {
-
-                [unowned self] note in
-
-                let handle = note.object as! FileHandle
-                guard handle === outputPipe.fileHandleForReading ||
-                      handle === errorPipe.fileHandleForReading else
-                {
-                  print("cannot obtain handle to out or err")
-                  return
-                }
-
-                defer { handle.waitForDataInBackgroundAndNotify() }
-                let data = handle.availableData
-                let str = String(decoding: data, as: UTF8.self)
-                if handle === outputPipe.fileHandleForReading
-                {
-                  outputHandler(str, "")
-                }
-                else
-                {
-                  outputHandler("", str)
-                }
-              }
-
-      task.launch()
-
-      outputPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
-      errorPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+      process.isRunning
     }
 
-    deinit
+    public init(_ args:[String], fOutput f:@escaping (String, OutputKind) -> ())
     {
-      if let i = notID
+      fOutput = f
+      process.executableURL = URL(fileURLWithPath: args[0])
+      process.standardOutput = outputPipe
+      process.standardError = errorPipe
+      process.standardInput = inputPipe
+      if(args.count > 1)
       {
-        NotificationCenter.default.removeObserver(i)
+        process.arguments = Array(args.dropFirst())
       }
-      task.terminate()
+      
+      outputPipe.fileHandleForReading.readabilityHandler =
+      {
+        (file) -> Void in
+        if let s = String(data: file.availableData, encoding: .utf8)
+        {
+          self.fOutput(s, .stdOut)
+        }
+      }
+      
+      errorPipe.fileHandleForReading.readabilityHandler =
+      {
+        (file) -> Void in
+        if let s = String(data: file.availableData, encoding: .utf8)
+        {
+          self.fOutput(s, .stdError)
+        }
+      }
+      
+      DispatchQueue.global().async
+      {
+        do
+        {
+          try self.process.run()
+          self.process.waitUntilExit()
+        }
+        catch
+        {
+          Log.error(error.localizedDescription)
+        }
+      }
     }
-
-    public func pipe(_ s: String)
+    
+    public func sendInput(_ s: String)
     {
       self.inputPipe.fileHandleForWriting.write("\(s)\n".data(using: .utf8)!)
     }
     
-    public func pipe(bytes: [UInt8])
+    public func sendInput(bytes: [UInt8])
     {
       let d = Data(bytes)
       self.inputPipe.fileHandleForWriting.write(d)
@@ -173,12 +174,23 @@ public struct OS
     
     public func interrupt()
     {
-      task.interrupt()
+      process.interrupt()
+    }
+    
+    public func terminate()
+    {
+      process.terminate()
     }
 
   }
   
-  
+  public func sshRemoteRun(command: [String],
+                           keyFile: String,
+                        remoteHost: String,
+                        sshBinPath: String = "/usr/bin/ssh") -> String?
+  {
+    ([sshBinPath, "-i", keyFile, remoteHost] + command).spawn()
+  }
 } //OS
 
 extension Collection where Element == String
@@ -209,3 +221,101 @@ extension Collection where Element == String
     }
   }
 }
+
+
+
+// remove, because this version needs runloop for it to work.
+/*
+@available(OSX 10.13, *)
+  public class SpawnInteractive
+  {
+    let outputPipe = Pipe()
+    let errorPipe = Pipe()
+    let inputPipe = Pipe()
+    let task = Process()
+    let outputHandler: (String, String) -> ()
+
+    private var  notID: Any?
+
+
+    public init(_ args:[String], outputHandler f:@escaping (String, String) -> ())
+    {
+      outputHandler = f
+      task.executableURL = URL(fileURLWithPath: args[0])
+      task.standardOutput = outputPipe
+      task.standardError = errorPipe
+      task.standardInput = inputPipe
+      if(args.count > 1) {  task.arguments = Array(args.dropFirst()) }
+
+      notID = NotificationCenter.default.addObserver(forName: .NSFileHandleDataAvailable, object: nil, queue: OperationQueue.main)
+              {
+
+                [unowned self] note in
+
+                let handle = note.object as! FileHandle
+                guard handle === outputPipe.fileHandleForReading ||
+                      handle === errorPipe.fileHandleForReading else
+                {
+                  Log.error("cannot obtain handle to out or err")
+                  return
+                }
+
+                defer { handle.waitForDataInBackgroundAndNotify() }
+                let data = handle.availableData
+                let str = String(decoding: data, as: UTF8.self)
+                if handle === outputPipe.fileHandleForReading
+                {
+                  outputHandler(str, "")
+                }
+                else
+                {
+                  outputHandler("", str)
+                }
+              }
+
+
+      do
+      {
+        try task.run()
+
+        outputPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+        errorPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+      }
+      catch let error as NSError
+      {
+        Log.error("OS.SpawnInteractive \(args) fail: \(error.localizedDescription)")
+      }
+    }
+
+    deinit
+    {
+      if let i = notID
+      {
+        NotificationCenter.default.removeObserver(i)
+      }
+      task.terminate()
+    }
+
+    public func pipe(_ s: String)
+    {
+      self.inputPipe.fileHandleForWriting.write("\(s)\n".data(using: .utf8)!)
+    }
+    
+    public func pipe(bytes: [UInt8])
+    {
+      let d = Data(bytes)
+      self.inputPipe.fileHandleForWriting.write(d)
+    }
+    
+    public func interrupt()
+    {
+      task.interrupt()
+    }
+    
+    public func terminate()
+    {
+      task.terminate()
+    }
+
+  }
+ */

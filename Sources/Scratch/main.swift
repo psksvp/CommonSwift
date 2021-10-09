@@ -1,6 +1,20 @@
 import Foundation
 import CommonSwift
-import Cocoa
+               
+//if let lines = sshRemoteRun(command: ["cd", "workspace", "&&", "ls", "-l"],
+//                      keyFile: "/Users/psksvp/.ssh/joseon",
+//                   remoteHost: "psksvp@joseon.local")
+//{
+//  for l in lines.components(separatedBy: "\n")
+//  {
+//    print(l)
+//  }
+//}
+//else
+//{
+//  print("fail")
+//}
+
 
 
 if #available(OSX 10.13, *)
@@ -17,31 +31,41 @@ func testSpawnInteractive()
 {
   let sw = OS.SpawnInteractive(["/Users/psksvp/Local/python/bin/python3", "-m", "http.server", "8001"]) //(["/usr/bin/swift"])
   {
-    (stdOut, stdErr) -> () in
+    (s, t) -> () in
     
-    print(" \(stdOut)   \(stdErr) ")
-  }
-  
-  var running = true
-  
-  DispatchQueue.global(qos: .background).async
-  {
-    while running
+    switch t
     {
-      print("enter > ")
-      if let s = readLine(),
-         s.count > 0
+      case .stdOut : print("stdOut: \(s)")
+      case .stdError : print("stdErr: \(s)")
+    }
+   
+  }
+
+  var running = true
+
+  while running && sw.running
+  {
+    print("enter > ")
+    if let s = readLine(),
+       s.count > 0
+    {
+      if "quit" == s
       {
         sw.interrupt()
+        running = false
       }
       else
       {
-        running = !running
+        sw.sendInput(s)
       }
+    }
+    else
+    {
+      running = !running
     }
   }
   
-  RunLoop.main.run()
+  print("exiting")
 }
 
 
@@ -111,4 +135,44 @@ func testSpawnInteractive()
 //  }
 //  
 //  print("exiting")
+//}
+
+
+
+//class ProcessViewController: NSViewController {
+//
+//     var executeCommandProcess: Process!
+//
+//     func executeProcess() {
+//
+//     DispatchQueue.global().async {
+//
+//
+//           self.executeCommandProcess = Process()
+//           let pipe = Pipe()
+//
+//           self.executeCommandProcess.standardOutput = pipe
+//           self.executeCommandProcess.launchPath = ""
+//           self.executeCommandProcess.arguments = []
+//           var bigOutputString: String = ""
+//
+//           pipe.fileHandleForReading.readabilityHandler = { (fileHandle) -> Void in
+//               let availableData = fileHandle.availableData
+//               let newOutput = String.init(data: availableData, encoding: .utf8)
+//               bigOutputString.append(newOutput!)
+//               print("\(newOutput!)")
+//               // Display the new output appropriately in a NSTextView for example
+//
+//           }
+//
+//           self.executeCommandProcess.launch()
+//           self.executeCommandProcess.waitUntilExit()
+//
+//           DispatchQueue.main.async {
+//                // End of the Process, give feedback to the user.
+//           }
+//
+//     }
+//   }
+//
 //}
