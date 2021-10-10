@@ -216,11 +216,13 @@ public extension Collection where Element == String
       if !stderr.isEmpty
       {
         Log.info(stderr)
+        return nil
       }
       return stdout
     }
     else
     {
+      Log.error("fail to execute: \(self)")
       return nil
     }
   }
