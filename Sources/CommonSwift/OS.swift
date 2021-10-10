@@ -213,12 +213,12 @@ public extension Collection where Element == String
   {
     if let (stdout, stderr) = OS.spawn(self as! [String], stdInput)
     {
-      if !stderr.isEmpty
+      if !stderr.trim().isEmpty
       {
         Log.info(stderr)
         return nil
       }
-      return stdout
+      return stdout.trim()
     }
     else
     {
