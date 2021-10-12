@@ -2,7 +2,11 @@ import Foundation
 import CommonSwift
     
   
-testInterativeRemoteRun()
+if let path = FS.FilePath("/Users/psksvp/.gitconfig")
+{
+  print(path.directory)
+  print(path.filename)
+}
   
   
 func testRemoteRun()
