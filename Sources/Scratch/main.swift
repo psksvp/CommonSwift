@@ -32,12 +32,12 @@ func testInterativeRemoteRun()
                                    keyFile: "/Users/psksvp/.ssh/joseon",
                                 remoteHost: "psksvp@joseon.local")
   {
-    (s, t) -> () in
+    (t) -> () in
     
     switch t
     {
-      case .stdOut : print("stdOut: \(s)")
-      case .stdError : print("stdErr: \(s)")
+      case .stdOut(let s) : print("stdOut: \(s)")
+      case .stdError(let s) : print("stdErr: \(s)")
     }
    
   }
@@ -66,12 +66,12 @@ func testSpawnInteractive()
 {
   let sw = OS.SpawnInteractive(["/Users/psksvp/Local/python/bin/python3", "-m", "http.server", "8001"]) //(["/usr/bin/swift"])
   {
-    (s, t) -> () in
+    (t) -> () in
     
     switch t
     {
-      case .stdOut : print("stdOut: \(s)")
-      case .stdError : print("stdErr: \(s)")
+      case .stdOut(let s)   : print("stdOut: \(s)")
+      case .stdError(let s) : print("stdErr: \(s)")
     }
    
   }

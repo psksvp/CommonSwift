@@ -51,10 +51,10 @@ public struct OS
 {
   private init() {}
   
-  public enum StandardOutputKind
+  public enum StandardOutput
   {
-    case stdOut
-    case stdError
+    case stdOut(String)
+    case stdError(String)
   }
   
   @available(OSX 10.13, *)
@@ -110,14 +110,14 @@ public struct OS
     let outputPipe = Pipe()
     let errorPipe = Pipe()
     let inputPipe = Pipe()
-    let fOutput: (String, StandardOutputKind) -> ()
+    let fOutput: (StandardOutput) -> ()
     
     public var running: Bool
     {
       process.isRunning
     }
 
-    public init(_ args:[String], fOutput f:@escaping (String, StandardOutputKind) -> ())
+    public init(_ args:[String], fOutput f:@escaping (StandardOutput) -> ())
     {
       fOutput = f
       process.executableURL = URL(fileURLWithPath: args[0])
@@ -134,7 +134,7 @@ public struct OS
         (file) -> Void in
         if let s = String(data: file.availableData, encoding: .utf8)
         {
-          self.fOutput(s, .stdOut)
+          self.fOutput(.stdOut(s))
         }
       }
       
@@ -143,7 +143,7 @@ public struct OS
         (file) -> Void in
         if let s = String(data: file.availableData, encoding: .utf8)
         {
-          self.fOutput(s, .stdError)
+          self.fOutput(.stdError(s))
         }
       }
       
@@ -198,7 +198,7 @@ public struct OS
                                           keyFile: String,
                                        remoteHost: String,
                                        sshBinPath: String = "/usr/bin/ssh",
-                                        fOutput f:@escaping (String, OS.StandardOutputKind) -> ()) -> SpawnInteractive
+                                        fOutput f:@escaping (OS.StandardOutput) -> ()) -> SpawnInteractive
   {
     ([sshBinPath, "-i", keyFile, remoteHost] + command).spawnInteractive(fOutput: f)
   }
@@ -227,7 +227,7 @@ public extension Collection where Element == String
     }
   }
   
-  func spawnInteractive(fOutput f:@escaping (String, OS.StandardOutputKind) -> ()) -> OS.SpawnInteractive
+  func spawnInteractive(fOutput f:@escaping (OS.StandardOutput) -> ()) -> OS.SpawnInteractive
   {
     OS.SpawnInteractive(self as! [String], fOutput: f)
   }
