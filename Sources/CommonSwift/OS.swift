@@ -134,7 +134,7 @@ public struct OS
         (file) -> Void in
         if let s = String(data: file.availableData, encoding: .utf8)
         {
-          self.fOutput(.stdOut(s))
+          self.fOutput(.stdOut(s.trim()))
         }
       }
       
@@ -143,7 +143,7 @@ public struct OS
         (file) -> Void in
         if let s = String(data: file.availableData, encoding: .utf8)
         {
-          self.fOutput(.stdError(s))
+          self.fOutput(.stdError(s.trim()))
         }
       }
       
