@@ -16,8 +16,8 @@ func testFSMonitor()
   {
     print("added")
   }
-  
   print("running \(m)")
+
   RunLoop.main.run() // need fucking runloop....
 }
   

@@ -46,30 +46,8 @@ import Foundation
 
 public class FS
 {
-  public struct FilePath
-  {
-    public let path: String
-    public let directory: String
-    public let filename: String
+  private init() {}
   
-    // must be file path, and file must exist
-    public init?(_ p: String)
-    {
-      var dir = ObjCBool(true)
-      guard FileManager.default.fileExists(atPath: p, isDirectory: &dir),
-            false == dir.boolValue,
-            let components = FileManager.default.componentsToDisplay(forPath: p) else
-      {
-        Log.error("fail to construct Path from string \(p)")
-        return nil
-      }
-      
-      self.path = p
-      self.filename = FileManager.default.displayName(atPath: p)
-      self.directory = "/\(components.dropFirst().dropLast().joined(separator: "/"))" //MS Windowz? go to hell
-    }
-  }
-
   public class func readDictionary<K,V>(fromLocalPath path:String) -> [K:V]?
   {
     func onError()

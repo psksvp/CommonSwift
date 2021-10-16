@@ -35,7 +35,7 @@
  * By using the provided information, libraries or software, you solely take the risks of damaging your hardwares.
  */
 //
-//  FS+Monitor.swift
+//  FS+FilePath.swift
 //  SwiftScratch
 //
 //  Created by psksvp on 18/9/19.
@@ -44,38 +44,50 @@
 
 import Foundation
 
-
 public extension FS
 {
-  class Monitor
+  struct FilePath
   {
-    private let monitorQueue: DispatchQueue
-    private let monitorSource: DispatchSourceFileSystemObject?
-    private let file: CInt
-    
-    public init(directory url: URL, fDirectoryChanged: @escaping () -> Void)
+    public let path: String
+    public let directory: String
+    public let filename: String
+  
+    // must be file path, and file must exist
+    public init?(_ p: String)
     {
-      self.file = open((url as NSURL).fileSystemRepresentation, O_EVTONLY)
-      self.monitorQueue = DispatchQueue(label: "FS.DirectoryMonitor",
-                                   attributes: .concurrent)
-      self.monitorSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: self.file,
-                                                                          eventMask: .write,
-                                                                              queue: self.monitorQueue)
-      
-      self.monitorSource?.setEventHandler
+      var dir = ObjCBool(true)
+      guard FileManager.default.fileExists(atPath: p, isDirectory: &dir),
+            false == dir.boolValue,
+            let components = FileManager.default.componentsToDisplay(forPath: p) else
       {
-        fDirectoryChanged()
+        Log.error("fail to construct Path from string \(p), path is not a file")
+        return nil
       }
       
-      self.monitorSource?.resume()
-      Log.info("FS.monitor(\(url.path))")
+      self.path = p
+      self.filename = FileManager.default.displayName(atPath: p)
+      self.directory = "/\(components.dropFirst().dropLast().joined(separator: "/"))" //MS Windowz? go to hell
     }
     
-    deinit
+    public var fileExtension: String?
     {
-      close(self.file)
-      Log.info("FS.monitor.deinit")
+      guard let dotIdx = self.filename.range(of: ".", options: String.CompareOptions.backwards) else
+      {
+        return nil
+      }
+      
+      return String(self.filename[dotIdx])
     }
     
+    public var filenameWithOutExtension: String
+    {
+      guard let dotIdx = self.filename.range(of: ".", options: String.CompareOptions.backwards) else
+      {
+        // there is no dot ext, so just return
+        return self.filename
+      }
+    
+      return String(self.filename[self.filename.startIndex ..< dotIdx.lowerBound])
+    }
   }
 }
