@@ -92,8 +92,8 @@ public struct OS
         let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
         let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
 
-        return (stdout: String(decoding: outputData, as: UTF8.self), 
-                stderr: String(decoding: errorData, as: UTF8.self))
+        return (stdout: String(decoding: outputData, as: UTF8.self).trim(),
+                stderr: String(decoding: errorData, as: UTF8.self).trim())
       }
       catch let error as NSError
       {
@@ -213,12 +213,12 @@ public extension Collection where Element == String
   {
     if let (stdout, stderr) = OS.spawn(self as! [String], stdInput)
     {
-      if !stderr.trim().isEmpty
+      if !stderr.isEmpty
       {
         Log.info(stderr)
         return nil
       }
-      return stdout.trim()
+      return stdout
     }
     else
     {
