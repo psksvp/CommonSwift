@@ -47,12 +47,18 @@ import Foundation
 public class Log
 {
   private init() {}
+  
+  public static var logs = [String]()
+
+  
+  public static var logLimit = 20
   public static var throwOnError = false
   public class func error(_ msg:String, 
-	                        _ function: String = #function,
-													_ line: Int = #line) -> Void
+                          _ function: String = #function,
+                          _ line: Int = #line) -> Void
   {
-    NSLog("Error(\(function):\(line)): \(msg) ")
+    let log = "Error(\(function):\(line)): \(msg)"
+    logs.append(log, withLimit: logLimit)
     if throwOnError
     {
       fatalError(msg)
@@ -60,17 +66,26 @@ public class Log
   }
   
   public class func warn(_ msg:String,
-	                       _ function: String = #function,
-												 _ line: Int = #line) -> Void
+                         _ function: String = #function,
+                         _ line: Int = #line) -> Void
   {
-    NSLog("warn(\(function):\(line)): \(msg)")
+    let log = "warn(\(function):\(line)): \(msg)"
+    logs.append(log, withLimit: logLimit)
+    NSLog(log)
   }
   
   public class func info(_ msg:String,
-	                       _ function: String = #function,
-												 _ line: Int = #line) -> Void
+                         _ function: String = #function,
+                         _ line: Int = #line) -> Void
   {
-    NSLog("info(\(function):\(line)): \(msg)")
+    let log = "info(\(function):\(line)): \(msg)"
+    logs.append(log, withLimit: logLimit)
+    NSLog(log)
+  }
+  
+  public class func save(_ p: String)
+  {
+    FS.writeText(inString: logs.joined(separator: "\n"), toPath: p)
   }
 	
 }

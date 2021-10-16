@@ -2,10 +2,23 @@ import Foundation
 import CommonSwift
     
   
-if let path = FS.FilePath("/Users/psksvp/.gitconfig")
+//if let path = FS.FilePath("/Users/psksvp/.gitconfig")
+//{
+//  print(path.directory)
+//  print(path.filename)
+//}
+
+testFSMonitor()
+
+func testFSMonitor()
 {
-  print(path.directory)
-  print(path.filename)
+  let m = FS.Monitor(directory: URL(fileURLWithPath: "/Users/psksvp/workspace/temp"))
+  {
+    print("added")
+  }
+  
+  print("running \(m)")
+  RunLoop.main.run() // need fucking runloop....
 }
   
   
