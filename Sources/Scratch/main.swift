@@ -14,7 +14,9 @@ func testFSMonitor()
 {
   let m = FS.Monitor(directory: URL(fileURLWithPath: "/Users/psksvp/workspace/temp"))
   {
-    print("added")
+    changed in
+    
+    print(changed)
   }
   print("running \(m)")
 

@@ -52,8 +52,9 @@ public extension FS
     private let monitorQueue: DispatchQueue
     private let monitorSource: DispatchSourceFileSystemObject?
     private let file: CInt
+    private var dirContent = Set<String>()
     
-    public init(directory url: URL, fDirectoryChanged: @escaping () -> Void)
+    public init(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void)
     {
       self.file = open((url as NSURL).fileSystemRepresentation, O_EVTONLY)
       self.monitorQueue = DispatchQueue(label: "FS.DirectoryMonitor",
@@ -64,7 +65,18 @@ public extension FS
       
       self.monitorSource?.setEventHandler
       {
-        fDirectoryChanged()
+        print("here")
+        guard let c = FS.contentsOfDirectory(url.path) else { return }
+        let n = Set(c)
+        let d = n.subtracting(self.dirContent)
+        guard !d.isEmpty else {return}
+        self.dirContent = n
+        fDirectoryChanged(d)
+      }
+      
+      if let c = FS.contentsOfDirectory(url.path)
+      {
+        self.dirContent = Set(c)
       }
       
       self.monitorSource?.resume()
