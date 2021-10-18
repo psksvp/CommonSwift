@@ -59,6 +59,7 @@ public class Log
   {
     let log = "Error(\(function):\(line)): \(msg)"
     logs.append(log, withLimit: logLimit)
+    NSLog(log)
     if throwOnError
     {
       fatalError(msg)
