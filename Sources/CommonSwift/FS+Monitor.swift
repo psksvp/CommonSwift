@@ -116,7 +116,7 @@ public extension FS
       let script = """
       /usr/bin/inotifywait -m \(self.directoryPath) -e create -e moved_to -e moved_from -e delete |
       while read path action file; do
-        echo "'$file', '$path', '$action'"
+        echo "$file, $path, $action"
       done
       """
       
