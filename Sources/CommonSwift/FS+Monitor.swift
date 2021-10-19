@@ -46,6 +46,10 @@ import Foundation
 import Dispatch
 
 
+// function a little different on macOS and Linux.
+// Windowzzzz? fuck you, go to hell!
+
+
 public extension FS
 {
 
@@ -69,7 +73,6 @@ public extension FS
       
       self.monitorSource?.setEventHandler
       {
-        print("here")
         guard let c = FS.contentsOfDirectory(url.path) else { return }
         let n = Set(c)
         let d = n.subtracting(self.dirContent)
@@ -120,9 +123,9 @@ public extension FS
       done
       """
       
-      FS.writeText(inString: script, toPath: "\(FS.tempDir)/monitor.sh")
-      
-      self.process = OS.SpawnInteractive(["/usr/bin/sh", "\(FS.tempDir)/monitor.sh"])
+      let monitorSh = "\(FS.tempDir)/monitor\(UUID().uuidString).sh"
+      FS.writeText(inString: script, toPath: monitorSh)
+      self.process = OS.SpawnInteractive(["/usr/bin/sh", monitorSh])
                      {
                        out in
                      
