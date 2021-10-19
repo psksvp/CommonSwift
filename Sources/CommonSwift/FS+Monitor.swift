@@ -114,7 +114,7 @@ public extension FS
       self.directoryPath = url.path
       
       let script = """
-      /usr/bin/inotifywait -m \(self.directoryPath) -e create -e moved_to -e move_from -e delete |
+      /usr/bin/inotifywait -m \(self.directoryPath) -e create -e moved_to -e moved_from -e delete |
       while read path action file; do
         echo "'$file', '$path', '$action'"
       done
