@@ -48,6 +48,9 @@ import Dispatch
 
 public extension FS
 {
+
+#if os(macOS)
+
   class Monitor
   {
     private let monitorQueue: DispatchQueue
@@ -89,6 +92,78 @@ public extension FS
       close(self.file)
       Log.info("FS.monitor.deinit")
     }
-    
   }
+
+#elseif os(Linux)
+
+  class Monitor
+  {
+    private let directoryPath: String
+    private let process: OS.SpawnInteractive
+    
+    public init(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void)
+    {
+      func parse(_ line: String) -> Set<String>
+      {
+        let c = line.trim().components(separatedBy: ",")
+        guard  c.count >= 3 else {return Set<String>()}
+        
+        return Set([c.first!])
+      }
+    
+      self.directoryPath = url.path
+      
+      let script = """
+      /usr/bin/inotifywait -m \(self.directoryPath) -e create -e moved_to -e move_from -e delete |
+      while read path action file; do
+        echo "'$file', '$path', '$action'"
+      done
+      """
+      
+      FS.writeText(inString: script, toPath: "\(FS.tempDir)/monitor.sh")
+      
+      self.process = OS.SpawnInteractive(["/usr/bin/sh", "\(FS.tempDir)/monitor.sh"])
+                     {
+                       out in
+                     
+                       switch out
+                       {
+                         case .stdOut(let line)  : let c = parse(line)
+                                                   if !c.isEmpty
+                                                   {
+                                                     fDirectoryChanged(c)
+                                                   }
+                           
+                         case .stdError(let err) : Log.error(err)
+                       }
+                     }
+    }
+    
+    deinit
+    {
+      self.process.terminate()
+    }
+  }
+
+#endif
+
 }
+
+
+/**
+
+moved_to
+    A file or directory was moved into a watched directory. This event occurs even if the file is simply moved from and to the same directory.
+moved_from
+    A file or directory was moved from a watched directory. This event occurs even if the file is simply moved from and to the same directory.
+move
+    A file or directory was moved from or to a watched directory. Note that this is actually implemented simply by listening for both moved_to and moved_from, hence all close events received will be output as one or both of these, not MOVE.
+move_self
+    A watched file or directory was moved. After this event, the file or directory is no longer being watched.
+create
+    A file or directory was created within a watched directory.
+delete
+    A file or directory within a watched directory was deleted.
+delete_self
+
+ */

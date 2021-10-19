@@ -48,6 +48,8 @@ public class FS
 {
   private init() {}
   
+  public static let tempDir = FileManager.default.temporaryDirectory.path
+  
   public class func readDictionary<K,V>(fromLocalPath path:String) -> [K:V]?
   {
     func onError()
