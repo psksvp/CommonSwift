@@ -106,7 +106,7 @@ public extension FS
     let fileHandle: FileHandle
     let source: DispatchSourceFileSystemObject
 
-    init(url: URL, fFileChanged: @escaping () -> Void) throws
+    public init(url: URL, fFileChanged: @escaping () -> Void) throws
     {
       self.url = url
       self.fileHandle = try FileHandle(forReadingFrom: url)
