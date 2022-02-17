@@ -52,7 +52,6 @@ import Dispatch
 
 public extension FS
 {
-
 #if os(macOS)
 
   class Monitor
@@ -95,6 +94,61 @@ public extension FS
       close(self.file)
       Log.info("FS.monitor.deinit")
     }
+  }
+  
+  ////////////////////
+  ///
+  ///
+  class FileMonitor
+  {
+    let url: URL
+
+    let fileHandle: FileHandle
+    let source: DispatchSourceFileSystemObject
+
+    init(url: URL, fFileChanged: @escaping () -> Void) throws
+    {
+      self.url = url
+      self.fileHandle = try FileHandle(forReadingFrom: url)
+
+      self.source = DispatchSource.makeFileSystemObjectSource(fileDescriptor: fileHandle.fileDescriptor,
+                                                                   eventMask: .extend,
+                                                                       queue: DispatchQueue.main)
+
+      source.setEventHandler
+      {
+        let event = self.source.data
+        guard event.contains(.extend) else
+        {
+          return
+        }
+        fFileChanged()
+      }
+
+      source.setCancelHandler
+      {
+        try? self.fileHandle.close()
+      }
+
+      fileHandle.seekToEndOfFile()
+      source.resume()
+    }
+
+    deinit
+    {
+      source.cancel()
+    }
+
+//    func process(event: DispatchSource.FileSystemEvent)
+//    {
+//       guard event.contains(.extend) else
+//       {
+//           return
+//       }
+//       let newData = self.fileHandle.readDataToEndOfFile()
+//       let string = String(data: newData, encoding: .utf8)!
+//       //self.delegate?.didReceive(changes: string)
+//    }
   }
 
 #elseif os(Linux)
