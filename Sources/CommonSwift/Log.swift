@@ -58,7 +58,7 @@ public class Log
                           _ line: Int = #line) -> Void
   {
     let log = "Error(\(function):\(line)): \(msg)"
-    logs.append(log, withLimit: logLimit)
+    //logs.append(log, withLimit: logLimit)
     NSLog(log)
     if throwOnError
     {
@@ -71,7 +71,7 @@ public class Log
                          _ line: Int = #line) -> Void
   {
     let log = "warn(\(function):\(line)): \(msg)"
-    logs.append(log, withLimit: logLimit)
+    //logs.append(log, withLimit: logLimit)
     NSLog(log)
   }
   
@@ -80,7 +80,7 @@ public class Log
                          _ line: Int = #line) -> Void
   {
     let log = "info(\(function):\(line)): \(msg)"
-    logs.append(log, withLimit: logLimit)
+    //logs.append(log, withLimit: logLimit)
     NSLog(log)
   }
   
