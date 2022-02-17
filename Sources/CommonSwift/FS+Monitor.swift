@@ -106,23 +106,19 @@ public extension FS
     let fileHandle: FileHandle
     let source: DispatchSourceFileSystemObject
 
-    public init(url: URL, fFileChanged: @escaping () -> Void) throws
+    public init(url: URL, eventMask em: DispatchSource.FileSystemEvent, fFileChanged: @escaping (URL, DispatchSource.FileSystemEvent) -> Void) throws
     {
       self.url = url
       self.fileHandle = try FileHandle(forReadingFrom: url)
 
       self.source = DispatchSource.makeFileSystemObjectSource(fileDescriptor: fileHandle.fileDescriptor,
-                                                                   eventMask: .extend,
+                                                                   eventMask: em,
                                                                        queue: DispatchQueue.main)
 
       source.setEventHandler
       {
         let event = self.source.data
-        guard event.contains(.extend) else
-        {
-          return
-        }
-        fFileChanged()
+        fFileChanged(self.url, event)
       }
 
       source.setCancelHandler
@@ -138,17 +134,6 @@ public extension FS
     {
       source.cancel()
     }
-
-//    func process(event: DispatchSource.FileSystemEvent)
-//    {
-//       guard event.contains(.extend) else
-//       {
-//           return
-//       }
-//       let newData = self.fileHandle.readDataToEndOfFile()
-//       let string = String(data: newData, encoding: .utf8)!
-//       //self.delegate?.didReceive(changes: string)
-//    }
   }
 
 #elseif os(Linux)
