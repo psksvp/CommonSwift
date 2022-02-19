@@ -7,6 +7,37 @@ import WebKit
 
 public extension WKWebView
 {
+  func scrollToVerticalPoint(_ y:Int)
+  {
+    let js = "window.scrollTo(0, \(y))"
+    self.evaluateJavaScript(js)
+    {
+      (_, error) in
+      
+      if let _ = error
+      {
+        dump(error)
+      }
+    }
+  }
+  
+  func readPageVerticalOffset(f: @escaping (Int) -> Void)
+  {
+    self.evaluateJavaScript("window.pageYOffset")
+    {
+      result, error in
+      if let y = result as? Int
+      {
+        //self.savedPageYOffset = y
+        f(y)
+      }
+      else
+      {
+        dump(error)
+      }
+    }
+  }
+  
   func scrollToAnchor(_ s:String) -> Void
   {
     let anchor = "\"#\(s.lowercased().trim().replacingOccurrences(of: " ", with: "-"))\""
