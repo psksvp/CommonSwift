@@ -54,7 +54,7 @@ public extension FS
 {
 #if os(macOS)
 
-  class Monitor
+  class DirectoryMonitor
   {
     private let monitorQueue: DispatchQueue
     private let monitorSource: DispatchSourceFileSystemObject?
@@ -138,7 +138,7 @@ public extension FS
 
 #elseif os(Linux)
 
-  class Monitor
+  class DirectoryMonitor
   {
     private let directoryPath: String
     private let process: OS.SpawnInteractive
@@ -189,6 +189,18 @@ public extension FS
 
 #endif
 
+  
+  class func monitor(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void) -> DirectoryMonitor
+  {
+    DirectoryMonitor(directory: url, fDirectoryChanged: fDirectoryChanged)
+  }
+  
+  class func monitor(file url: URL,
+           eventMask em: DispatchSource.FileSystemEvent,
+               fFileChanged: @escaping (URL, DispatchSource.FileSystemEvent) -> Void) throws -> FileMonitor
+  {
+    try FileMonitor(url: url, eventMask: em, fFileChanged: fFileChanged)
+  }
 }
 
 

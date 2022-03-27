@@ -12,7 +12,7 @@ testFSMonitor()
 
 func testFSMonitor()
 {
-  let m = FS.Monitor(directory: URL(fileURLWithPath: "/home/psksvp/workspace/temp"))
+  let m = FS.monitor(directory: URL(fileURLWithPath: "/home/psksvp/workspace/temp"))
   {
     changed in
     
