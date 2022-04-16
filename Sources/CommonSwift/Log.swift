@@ -52,7 +52,17 @@ public class Log
 
   
   public static var logLimit = 20
-  public static var throwOnError = false
+  
+  public class func fatal(_ msg:String,
+                          _ function: String = #function,
+                          _ line: Int = #line)
+  {
+    let log = "FatalError(\(function):\(line)): \(msg)"
+    //logs.append(log, withLimit: logLimit)
+    NSLog(log)
+    fatalError(msg)
+  }
+  
   public class func error(_ msg:String, 
                           _ function: String = #function,
                           _ line: Int = #line) -> Void
@@ -60,10 +70,6 @@ public class Log
     let log = "Error(\(function):\(line)): \(msg)"
     //logs.append(log, withLimit: logLimit)
     NSLog(log)
-    if throwOnError
-    {
-      fatalError(msg)
-    }
   }
   
   public class func warn(_ msg:String,

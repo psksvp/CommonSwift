@@ -2,13 +2,30 @@ import Foundation
 import CommonSwift
     
   
-//if let path = FS.FilePath("/Users/psksvp/.gitconfig")
-//{
-//  print(path.directory)
-//  print(path.filename)
-//}
+print("HelloWorld")
+mat()
 
-testFSMonitor()
+func mat()
+{
+  let v = Math.Vector<Int>([1, 2, 3, 4])
+  print(v)
+  print("------")
+  let m = Math.Matrix<Int>(rows: 2, cols: 3, [1, 2, 3, 4, 5, 6])!
+  print(m)
+  print("------")
+  print(m.vector(row: 0))
+  print("------")
+  print(m.vector(row: 1))
+  print("------")
+  print(m.vector(column: 0))
+  print("------")
+  print(m.vector(column: 1))
+  print("------")
+  print(m.vector(column: 2))
+  print("------")
+}
+
+
 
 func testFSMonitor()
 {
