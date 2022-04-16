@@ -3,27 +3,33 @@ import CommonSwift
     
   
 print("HelloWorld")
-mat()
-
-func mat()
-{
-  let v = Math.Vector<Int>([1, 2, 3, 4])
-  print(v)
-  print("------")
-  let m = Math.Matrix<Int>(rows: 2, cols: 3, [1, 2, 3, 4, 5, 6])!
-  print(m)
-  print("------")
-  print(m.vector(row: 0))
-  print("------")
-  print(m.vector(row: 1))
-  print("------")
-  print(m.vector(column: 0))
-  print("------")
-  print(m.vector(column: 1))
-  print("------")
-  print(m.vector(column: 2))
-  print("------")
-}
+//mat()
+//
+//func mat()
+//{
+//  let v = Vector<Int>([1, 2, 3, 4])
+//  print(v)
+//  print("------")
+//  let m = Matrix<Int>(rows: 2, cols: 3, [1, 2, 3, 4, 5, 6])!
+//  print(m)
+//  print("------")
+//  print(m.vector(row: 0))
+//  print("------")
+//  print(m.vector(row: 1))
+//  print("------")
+//  print(m.vector(column: 0))
+//  print("------")
+//  print(m.vector(column: 1))
+//  print("------")
+//  print(m.vector(column: 2))
+//  print("------")
+//  
+//  let c2 = m.vector(column: 2)
+//  c2[0] = -1
+//  print(m)
+//  print("------")
+//  
+//}
 
 
 
