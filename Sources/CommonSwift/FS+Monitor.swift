@@ -75,11 +75,12 @@ public extension FS
       self.monitorSource?.setEventHandler
       {
         guard let c = FS.contentsOfDirectory(url.path) else { return }
-        let n = Set(c)
-        let d = n.subtracting(self.dirContent)
-        guard !d.isEmpty else {return}
-        self.dirContent = n
-        fDirectoryChanged(d)
+        fDirectoryChanged(Set(c))
+//        let n = Set(c)
+//        let d = n.subtracting(self.dirContent)
+//        guard !d.isEmpty else {return}
+//        self.dirContent = n
+//        fDirectoryChanged(d)
       }
       
       if let c = FS.contentsOfDirectory(url.path)
