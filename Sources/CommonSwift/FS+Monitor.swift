@@ -61,13 +61,15 @@ public extension FS
     private let file: CInt
     private var dirContent = Set<String>()
     
-    public init(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void)
+    public init(directory url: URL,
+                eventMask em: DispatchSource.FileSystemEvent = .write,
+                fDirectoryChanged: @escaping (Set<String>) -> Void)
     {
       self.file = open((url as NSURL).fileSystemRepresentation, O_EVTONLY)
       self.monitorQueue = DispatchQueue(label: "FS.DirectoryMonitor",
                                    attributes: .concurrent)
       self.monitorSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: self.file,
-                                                                          eventMask: .write,
+                                                                          eventMask: em,
                                                                               queue: self.monitorQueue)
       
       self.monitorSource?.setEventHandler
