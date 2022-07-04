@@ -46,6 +46,7 @@
 
 import Foundation
 
+#if !os(iOS)
 @available(OSX 10.13, *)
 public struct OS
 {
@@ -231,7 +232,7 @@ public extension Collection where Element == String
     OS.SpawnInteractive(self as! [String], fOutput: f)
   }
 }
-
+#endif
 
 
 // remove, because this version needs runloop for it to work.
