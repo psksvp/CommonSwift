@@ -1,9 +1,7 @@
 import Foundation
 
-#if os(macOS) 
+#if canImport(WebKit)
 import WebKit
-
-
 
 public extension WKWebView
 {

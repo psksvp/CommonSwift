@@ -2,140 +2,144 @@ import Foundation
 import CommonSwift
     
   
-print("HelloWorld")
-//mat()
+//print("HelloWorld")
+////mat()
+////
+////func mat()
+////{
+////  let v = Vector<Int>([1, 2, 3, 4])
+////  print(v)
+////  print("------")
+////  let m = Matrix<Int>(rows: 2, cols: 3, [1, 2, 3, 4, 5, 6])!
+////  print(m)
+////  print("------")
+////  print(m.vector(row: 0))
+////  print("------")
+////  print(m.vector(row: 1))
+////  print("------")
+////  print(m.vector(column: 0))
+////  print("------")
+////  print(m.vector(column: 1))
+////  print("------")
+////  print(m.vector(column: 2))
+////  print("------")
+////  
+////  let c2 = m.vector(column: 2)
+////  c2[0] = -1
+////  print(m)
+////  print("------")
+////  
+////}
 //
-//func mat()
+//
+//
+//func testFSMonitor()
 //{
-//  let v = Vector<Int>([1, 2, 3, 4])
-//  print(v)
-//  print("------")
-//  let m = Matrix<Int>(rows: 2, cols: 3, [1, 2, 3, 4, 5, 6])!
-//  print(m)
-//  print("------")
-//  print(m.vector(row: 0))
-//  print("------")
-//  print(m.vector(row: 1))
-//  print("------")
-//  print(m.vector(column: 0))
-//  print("------")
-//  print(m.vector(column: 1))
-//  print("------")
-//  print(m.vector(column: 2))
-//  print("------")
-//  
-//  let c2 = m.vector(column: 2)
-//  c2[0] = -1
-//  print(m)
-//  print("------")
-//  
+//  let m = FS.monitor(directory: URL(fileURLWithPath: "/home/psksvp/workspace/temp"))
+//  {
+//    changed in
+//    
+//    print(changed)
+//  }
+//  print("running \(m)")
+//
+//  RunLoop.main.run() // need fucking runloop....
 //}
-
-
-
-func testFSMonitor()
-{
-  let m = FS.monitor(directory: URL(fileURLWithPath: "/home/psksvp/workspace/temp"))
-  {
-    changed in
-    
-    print(changed)
-  }
-  print("running \(m)")
-
-  RunLoop.main.run() // need fucking runloop....
-}
-  
-  
-func testRemoteRun()
-{
-  if let lines = OS.remoteRun(command: ["cd", "workspace", "&&", "ls", "-l"],
-                                 keyFile: "/Users/psksvp/.ssh/joseon",
-                              remoteHost: "psksvp@joseon.local")
-  {
-    for l in lines.components(separatedBy: "\n")
-    {
-      print(l)
-    }
-  }
-  else
-  {
-    print("fail")
-  }
-}
-
-func testInterativeRemoteRun()
-{
-  let sw = OS.interactiveRemoteRun(command: ["/home/psksvp/.local/swift/usr/bin/swift"],
-                                   keyFile: "/Users/psksvp/.ssh/joseon",
-                                remoteHost: "psksvp@joseon.local")
-  {
-    (t) -> () in
-    
-    switch t
-    {
-      case .stdOut(let s) : print("stdOut: \(s)")
-      case .stdError(let s) : print("stdErr: \(s)")
-    }
-   
-  }
-
-  var running = true
-
-  while running //&& sw.running
-  {
-    if let s = readLine(),
-       s.count > 0,
-       "quit" != s
-    {
-      sw.sendInput(s)
-    }
-    else
-    {
-      sw.interrupt()
-      running = !running
-    }
-  }
-  
-  print("exiting")
-}
-
-func testSpawnInteractive()
-{
-  let sw = OS.SpawnInteractive(["/Users/psksvp/Local/python/bin/python3", "-m", "http.server", "8001"]) //(["/usr/bin/swift"])
-  {
-    (t) -> () in
-    
-    switch t
-    {
-      case .stdOut(let s)   : print("stdOut: \(s)")
-      case .stdError(let s) : print("stdErr: \(s)")
-    }
-   
-  }
-
-  var running = true
-
-  while running && sw.running
-  {
-    print("enter > ")
-    if let s = readLine(),
-       s.count > 0,
-       "quit" != s
-    {
-      sw.sendInput(s)
-    }
-    else
-    {
-      sw.interrupt()
-      running = !running
-    }
-  }
-  
-  print("exiting")
-}
-
-
+//  
+//  
+//@available(macOS 10.13, *)
+//func testRemoteRun()
+//{
+//  if let lines = OS.remoteRun(command: ["cd", "workspace", "&&", "ls", "-l"],
+//                                 keyFile: "/Users/psksvp/.ssh/joseon",
+//                              remoteHost: "psksvp@joseon.local")
+//  {
+//    for l in lines.components(separatedBy: "\n")
+//    {
+//      print(l)
+//    }
+//  }
+//  else
+//  {
+//    print("fail")
+//  }
+//}
+//
+//
+//@available(macOS 10.13, *)
+//func testInterativeRemoteRun()
+//{
+//  let sw = OS.interactiveRemoteRun(command: ["/home/psksvp/.local/swift/usr/bin/swift"],
+//                                   keyFile: "/Users/psksvp/.ssh/joseon",
+//                                remoteHost: "psksvp@joseon.local")
+//  {
+//    (t) -> () in
+//    
+//    switch t
+//    {
+//      case .stdOut(let s) : print("stdOut: \(s)")
+//      case .stdError(let s) : print("stdErr: \(s)")
+//    }
+//   
+//  }
+//
+//  var running = true
+//
+//  while running //&& sw.running
+//  {
+//    if let s = readLine(),
+//       s.count > 0,
+//       "quit" != s
+//    {
+//      sw.sendInput(s)
+//    }
+//    else
+//    {
+//      sw.interrupt()
+//      running = !running
+//    }
+//  }
+//  
+//  print("exiting")
+//}
+//
+//@available(macOS 10.13, *)
+//func testSpawnInteractive()
+//{
+//  let sw = OS.SpawnInteractive(["/Users/psksvp/Local/python/bin/python3", "-m", "http.server", "8001"]) //(["/usr/bin/swift"])
+//  {
+//    (t) -> () in
+//    
+//    switch t
+//    {
+//      case .stdOut(let s)   : print("stdOut: \(s)")
+//      case .stdError(let s) : print("stdErr: \(s)")
+//    }
+//   
+//  }
+//
+//  var running = true
+//
+//  while running && sw.running
+//  {
+//    print("enter > ")
+//    if let s = readLine(),
+//       s.count > 0,
+//       "quit" != s
+//    {
+//      sw.sendInput(s)
+//    }
+//    else
+//    {
+//      sw.interrupt()
+//      running = !running
+//    }
+//  }
+//  
+//  print("exiting")
+//}
+//
+//
 
 
 

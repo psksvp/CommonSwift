@@ -102,6 +102,7 @@ public extension FS
   ////////////////////
   ///
   ///
+  @available(macOS 10.15, *)
   class FileMonitor
   {
     let url: URL
@@ -198,6 +199,7 @@ public extension FS
     DirectoryMonitor(directory: url, fDirectoryChanged: fDirectoryChanged)
   }
   
+  @available(macOS 10.15, *)
   class func monitor(file url: URL,
            eventMask em: DispatchSource.FileSystemEvent,
                fFileChanged: @escaping (URL, DispatchSource.FileSystemEvent) -> Void) throws -> FileMonitor

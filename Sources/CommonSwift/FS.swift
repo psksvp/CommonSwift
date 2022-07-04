@@ -48,6 +48,7 @@ public class FS
 {
   private init() {}
   
+  @available(macOS 10.12, *)
   public static let tempDir = FileManager.default.temporaryDirectory.path
   
   public class func readDictionary<K,V>(fromLocalPath path:String) -> [K:V]?
