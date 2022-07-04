@@ -48,7 +48,7 @@ public class FS
 {
   private init() {}
   
-  #if !(iOS)
+  #if !os(iOS)
   @available(macOS 10.12, *)
   public static let tempDir = FileManager.default.temporaryDirectory.path
   #endif
