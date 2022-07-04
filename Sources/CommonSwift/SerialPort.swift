@@ -37,6 +37,8 @@
  
 import Foundation
 
+#if !os(iOS)
+
 #if os(OSX)
 import Darwin.C
 #elseif os(Linux)
@@ -284,3 +286,4 @@ extension SerialPort
     return nil
   }
 }
+#endif // if !os(iOS)
