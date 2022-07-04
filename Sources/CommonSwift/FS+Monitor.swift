@@ -193,7 +193,7 @@ public extension FS
 
 #endif
 
-  
+  #if os(macOS) || os(Linux)
   class func monitor(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void) -> DirectoryMonitor
   {
     DirectoryMonitor(directory: url, fDirectoryChanged: fDirectoryChanged)
@@ -206,23 +206,7 @@ public extension FS
   {
     try FileMonitor(url: url, eventMask: em, fFileChanged: fFileChanged)
   }
+  #endif
 }
 
 
-/**
-
-moved_to
-    A file or directory was moved into a watched directory. This event occurs even if the file is simply moved from and to the same directory.
-moved_from
-    A file or directory was moved from a watched directory. This event occurs even if the file is simply moved from and to the same directory.
-move
-    A file or directory was moved from or to a watched directory. Note that this is actually implemented simply by listening for both moved_to and moved_from, hence all close events received will be output as one or both of these, not MOVE.
-move_self
-    A watched file or directory was moved. After this event, the file or directory is no longer being watched.
-create
-    A file or directory was created within a watched directory.
-delete
-    A file or directory within a watched directory was deleted.
-delete_self
-
- */
