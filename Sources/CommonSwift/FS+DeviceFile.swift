@@ -44,7 +44,7 @@
 
 import Foundation
 
-
+#if os(macOS) || os(Linux)
 public extension FS
 {
   class func deviceFile(atPath p: String) -> DeviceFile?
@@ -124,3 +124,4 @@ public extension FS
     }
   }
 }
+#endif

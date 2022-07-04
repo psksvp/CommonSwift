@@ -43,10 +43,10 @@
 //  Copyright © 2019 com.psksvp. All rights reserved.
 //
 
+
 import Foundation
 
-
-
+@available(OSX 10.13, *)
 public struct OS
 {
   private init() {}
@@ -57,7 +57,6 @@ public struct OS
     case stdError(String)
   }
   
-  @available(OSX 10.13, *)
   @discardableResult
 	public static func spawn(_ args:[String], _ stringForInputPipe:String?) -> (stdout: String, stderr: String)?
   {
