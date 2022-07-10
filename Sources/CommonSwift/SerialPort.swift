@@ -41,6 +41,10 @@ import Foundation
 
 #if os(OSX)
 import Darwin.C
+import CoreFoundation
+import IOKit
+import IOKit.serial
+import IOKit.usb
 #elseif os(Linux)
 import Glibc
 #endif
@@ -122,6 +126,8 @@ public class SerialPort
   }
   
   private let fileID:Int32
+  
+  public var ready: Bool {self.fileID >= 0}
   
   public init(path: String, baud: Baud = .b4800,
                             bitSize: BitSize = .eight,
@@ -285,5 +291,43 @@ extension SerialPort
     
     return nil
   }
+  
+//  public class var list: [String]
+//  {
+//    #if os(macOS)
+//    guard let classes = IOServiceMatching(kIOSerialBSDServiceValue) else {return [String]()}
+//    var iter: io_iterator_t = 0 // io_iterator_t is aka UINT32
+//    guard KERN_SUCCESS == IOServiceGetMatchingServices(kIOMasterPortDefault, classes, &iter) else {return [String]()}
+//    var port: io_object_t = IOIteratorNext(iter)
+//    while port != 0
+//    {
+//      let s = "IOCalloutDevice".data(using: .utf8)!
+//      
+//      s.withUnsafeBytes
+//      {
+//        (unsafeBytes) in
+//        let bytes = unsafeBytes.bindMemory(to: UInt8.self).baseAddress!
+//        let callOutDeviceKey = CFStringCreateWithBytes(kCFAllocatorDefault, bytes, s.count, CFStringBuiltInEncodings.UTF8.rawValue, true)
+//        if let cfPath = IORegistryEntryCreateCFProperty(port, callOutDeviceKey, kCFAllocatorDefault, 0)
+//        {
+//          let result = CFStringGetCString(cfPath, <#T##buffer: UnsafeMutablePointer<CChar>!##UnsafeMutablePointer<CChar>!#>, <#T##bufferSize: CFIndex##CFIndex#>, <#T##encoding: CFStringEncoding##CFStringEncoding#>)
+//        }
+//      }
+//      
+//      //let callOutDeviceKey = CFStringCreateWithBytes(kCFAllocatorDefault, bytes, ioCallOutDevice.count, CFStringBuiltInEncodings.UTF8.rawValue, true)
+////      if let cfPath = IORegistryEntryCreateCFProperty(port, CFStringCreateWithBytes(kCFAllocatorDefault, "IOCalloutDevice".u, <#T##encoding: CFStringEncoding##CFStringEncoding#>)("IOCalloutDevice"), kCFAllocatorDefault, 0)
+////      {
+////
+////      }
+//    }
+//    
+//    return [String]()
+//    #endif
+//    
+//    #if os(Linux)
+//    return [String]()
+//    #endif
+//    
+//  }
 }
 #endif // if !os(iOS)
