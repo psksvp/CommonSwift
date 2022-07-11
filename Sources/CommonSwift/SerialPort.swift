@@ -135,8 +135,8 @@ public class SerialPort
   {
     Log.info("about to open \(path) for serial read & write")
 #if os(macOS)
-    self.fileID = open(path, O_RDWR | O_NOCTTY) // | O_EXLOCK)
-#elseif os(Linux)
+    self.fileID = open(path, O_RDWR | O_NOCTTY | O_EXLOCK | O_NONBLOCK)
+    Log.info("\(path) opened")
     self.fileID = open(path, O_RDWR | O_NOCTTY)
 #endif
     if(-1 == self.fileID)
