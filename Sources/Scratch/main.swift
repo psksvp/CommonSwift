@@ -1,5 +1,103 @@
-   
+import Foundation
+import CommonSwift
+
+struct SensorValue : Codable
+{
+  public let id: UUID
+  public let moisture: Float
+  public let temperature: Float
+  public let humidity: Int
+  public let light: Float
+}
+
+class GrowModule
+{
+  let port: SerialPort
+  let ready: Bool
   
+  var alive: Bool
+  {
+    guard let s = self.sendRequest("alive") else {return false}
+    return "ready" == s
+  }
+  
+  var id: String?
+  {
+    sendRequest("id")
+  }
+  
+  var sensor: SensorValue?
+  {
+    guard let s = self.sendRequest("sensor") else {return nil}
+    do
+    {
+      let v = try JSONDecoder().decode(SensorValue.self, from: s.data(using: .utf8)!)
+      return v
+    }
+    catch
+    {
+      return nil
+    }
+  }
+  
+  init(port: String)
+  {
+    self.port = SerialPort(path: port, baud: .b9600)
+    if let s = self.port.readLine()
+    {
+      print(s)
+      self.ready = true
+    }
+    else
+    {
+      print("???")
+      self.ready = false
+    }
+  }
+  
+  func sendRequest(_ cmd: String) -> String?
+  {
+    self.port.writeLine(cmd)
+    Thread.sleep(forTimeInterval: 1)
+    guard let s = self.port.readLine() else {return nil}
+    return s
+  }
+  
+}
+
+
+let g = GrowModule(port: "/dev/cu.usbserial-2130")
+while(!g.ready)
+{
+  print("waiting ...")
+  Thread.sleep(forTimeInterval: 1)
+}
+
+print(">", terminator: "")
+while let cmd = readLine()
+{
+  if cmd == "quit"
+  {
+    break;
+  }
+  
+  switch cmd
+  {
+    case "quite"  : break
+    case "alive"  : print(g.alive)
+    case "sensor" : print(g.sensor)
+    case "id"     : print(g.id)
+    default       : print("cmd??")
+  }
+  
+  print(">", terminator: "")
+}
+
+print("done")
+
+  
+
+
 //print("HelloWorld")
 ////mat()
 ////
