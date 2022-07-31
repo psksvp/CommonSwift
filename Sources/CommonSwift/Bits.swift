@@ -45,27 +45,22 @@
 
 import Foundation
 
+public func ascii<T: UnsignedInteger>(_ n: T) -> String
+{
+  return n >= 32 && n <= 126 ? String(Character(UnicodeScalar(Int(n))!)) : "."
+}
 
-/**
- 
- */
 public func hex<T: FixedWidthInteger>(_ n: T) -> String
 {
   let leadingZeros = (n.bitWidth / 8) * 2
   return String(format:"0x%0\(leadingZeros)X", n as! CVarArg)
 }
 
-/**
- 
- */
 public func hex<T: FixedWidthInteger>(_ n: [T]) -> [String]
 {
   n.map {hex($0)}
 }
 
-/**
- 
- */
 public func binary<T: FixedWidthInteger>(_ n: T) -> String
 {
   let bin = String(n, radix:2)
@@ -80,9 +75,8 @@ public func binary<T: FixedWidthInteger>(_ n: T) -> String
   }
 }
 
-/**
  
- */
+
 public extension UInt16
 {
   init(_ hi: UInt8, _ lo: UInt8)

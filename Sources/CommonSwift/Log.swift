@@ -42,6 +42,8 @@
 //  Copyright © 2019 com.psksvp. All rights reserved.
 //
 
+
+
 import Foundation
 
 public class Log
@@ -50,7 +52,6 @@ public class Log
   
   public static var logs = [String]()
 
-  
   public static var logLimit = 20
   
   public class func fatal(_ msg:String,
