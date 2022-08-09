@@ -193,20 +193,20 @@ public extension FS
 
 #endif
 
-  #if os(macOS) || os(Linux)
-  class func monitor(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void) -> DirectoryMonitor
-  {
-    DirectoryMonitor(directory: url, fDirectoryChanged: fDirectoryChanged)
-  }
-  
-  @available(macOS 10.15, *)
-  class func monitor(file url: URL,
-           eventMask em: DispatchSource.FileSystemEvent,
-               fFileChanged: @escaping (URL, DispatchSource.FileSystemEvent) -> Void) throws -> FileMonitor
-  {
-    try FileMonitor(url: url, eventMask: em, fFileChanged: fFileChanged)
-  }
-  #endif
+//  #if os(macOS) || os(Linux)
+//  class func monitor(directory url: URL, fDirectoryChanged: @escaping (Set<String>) -> Void) -> DirectoryMonitor
+//  {
+//    DirectoryMonitor(directory: url, fDirectoryChanged: fDirectoryChanged)
+//  }
+//  
+//  @available(macOS 10.15, *)
+//  class func monitor(file url: URL,
+//           eventMask em: DispatchSource.FileSystemEvent,
+//               fFileChanged: @escaping (URL, DispatchSource.FileSystemEvent) -> Void) throws -> DirectoryMonitor
+//  {
+//    try DirectoryMonitor(url: url, eventMask: em, fDirectoryChanged: fFileChanged)
+//  }
+//  #endif
 }
 
 
