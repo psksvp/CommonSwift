@@ -19,11 +19,11 @@ public extension StringProtocol
     return indices
   }
   
-  func matchAndLiftGroups(usingRegex pattern: String) -> [(match: String, groups: [String])]
+  func matchAndLiftGroups(usingRegex pattern: String) -> [(match: (range: Range<String.Index>, text: String), groups: [String])]
   {
     let r = self.matchAll(usingRegex: pattern).compactMap
     {
-      (range: Range<String.Index>, text: String) -> (match: String, groups: [String])? in
+      (range: Range<String.Index>, text: String) -> (match: (range: Range<String.Index>, text: String), groups: [String])? in
       
       let regex = try? NSRegularExpression(pattern: pattern, options:[])
       if let match = regex?.firstMatch(in: text,
@@ -44,11 +44,11 @@ public extension StringProtocol
         }
         else if 1 == lifted.count
         {
-          return (lifted.first!, [String]())
+          return ((range, lifted.first!), [String]())
         }
         else
         {
-          return (lifted.first!, Array(lifted.dropFirst()))
+          return ((range, lifted.first!), Array(lifted.dropFirst()))
         }
       }
       else
