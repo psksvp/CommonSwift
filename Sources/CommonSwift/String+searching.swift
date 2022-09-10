@@ -2,6 +2,22 @@ import Foundation
 
 public extension StringProtocol
 {
+  func ranges(ofRegex p: String) -> [Range<String.Index>]
+  {
+    var indices = [Range<String.Index>]()
+    var searchStartIndex = self.startIndex
+
+    while searchStartIndex < self.endIndex,
+          let range = self.range(of: p, options: [.regularExpression], range: searchStartIndex..<self.endIndex),
+          !range.isEmpty
+    {
+        indices.append(range)
+        searchStartIndex = range.upperBound
+    }
+
+    return indices
+  }
+  
   func matchAll(usingRegex p: String) -> [(range: Range<String.Index>, text: String)]
   {
     var indices = [(Range<String.Index>,String)]()
@@ -18,6 +34,8 @@ public extension StringProtocol
 
     return indices
   }
+  
+  
   
   func matchAndLiftGroups(usingRegex pattern: String) -> [(match: (range: Range<String.Index>, text: String), groups: [String])]
   {
