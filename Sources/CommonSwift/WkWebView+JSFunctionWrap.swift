@@ -60,7 +60,7 @@ public extension WKWebView
     {
       if(x[i].textContent.indexOf(s) >= 0)
       {
-        x[i].scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+        x[i].scrollIntoView({behavior: "smooth", block: "start", inline: "start"});
         x[i].style.backgroundColor = "Azure";
         break;
       }
