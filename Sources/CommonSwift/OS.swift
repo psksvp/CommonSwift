@@ -59,47 +59,49 @@ public struct OS
   }
   
   @discardableResult
-	public static func spawn(_ args:[String], _ stringForInputPipe:String?) -> (stdout: String, stderr: String)?
+  public static func spawn(_ args:[String], _ stringForInputPipe:String?, detach: Bool = false) -> (stdout: String, stderr: String)?
   {
-    if args.isEmpty
+    guard !args.isEmpty else {return nil}
+    
+    
+    let outputPipe = Pipe()
+    let errorPipe = Pipe()
+    let inputPipe = Pipe()
+    let task = Process()
+    task.executableURL = URL(fileURLWithPath: args[0])
+    task.standardOutput = outputPipe
+    task.standardError = errorPipe
+    task.standardInput = inputPipe
+    
+    if(args.count > 1)
     {
-      return nil
+      task.arguments = Array(args.dropFirst())
     }
-    else
+    
+    do
     {
-      let outputPipe = Pipe()
-      let errorPipe = Pipe()
-      let inputPipe = Pipe()
-      let task = Process()
-      task.executableURL = URL(fileURLWithPath: args[0])
-      task.standardOutput = outputPipe
-      task.standardError = errorPipe
-      task.standardInput = inputPipe
-      
-      if(args.count > 1)
+      try task.run()
+      if let inputString = stringForInputPipe
       {
-        task.arguments = Array(args.dropFirst())
+        inputPipe.fileHandleForWriting.write(Data(inputString.utf8))
+        inputPipe.fileHandleForWriting.closeFile()
       }
       
-      do 
+      if detach
       {
-        try task.run()
-        if let inputString = stringForInputPipe
-        {
-          inputPipe.fileHandleForWriting.write(Data(inputString.utf8))
-          inputPipe.fileHandleForWriting.closeFile()
-        }
-        let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-        let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+        return ("", "")
+      }
+      
+      let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+      let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
 
-        return (stdout: String(decoding: outputData, as: UTF8.self).trim(),
-                stderr: String(decoding: errorData, as: UTF8.self).trim())
-      }
-      catch let error as NSError
-      {
-        Log.error("OS.spawn \(args) fail: \(error.localizedDescription)")
-        return nil
-      }
+      return (stdout: String(decoding: outputData, as: UTF8.self).trim(),
+              stderr: String(decoding: errorData, as: UTF8.self).trim())
+    }
+    catch let error as NSError
+    {
+      Log.error("OS.spawn \(args) fail: \(error.localizedDescription)")
+      return nil
     }
   }
 
@@ -209,9 +211,9 @@ public struct OS
 public extension Collection where Element == String
 {
   @discardableResult
-  func spawn(stdInput: String? = nil) -> String?
+  func spawn(stdInput: String? = nil, detach d: Bool = false) -> String?
   {
-    if let (stdout, stderr) = OS.spawn(self as! [String], stdInput)
+    if let (stdout, stderr) = OS.spawn(self as! [String], stdInput, detach: d)
     {
       if !stderr.isEmpty
       {

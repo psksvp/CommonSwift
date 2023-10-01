@@ -81,11 +81,24 @@ public class FS
   }
   
   
+  public class func readText(fromURL url: URL) -> String?
+  {
+    do
+    {
+      let text = try String(contentsOf: url)
+      return text
+    }
+    catch
+    {
+      return nil
+    }
+  }
+  
   public class func readText(fromLocalPath path:String) -> String?
   {
     do
     {
-      let text = try String(contentsOf:URL(fileURLWithPath:path))
+      let text = try String(contentsOf: URL(fileURLWithPath:path))
       return text
     }
     catch

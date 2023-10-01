@@ -38,6 +38,17 @@ public func JSON2Codable<T: Codable>(_ jsonString: String) -> T?
   }
 }
 
+public func readJSON<T: Codable>(_ url: URL) -> T?
+{
+  guard let json = FS.readText(fromURL: url) else
+  {
+    Log.error("Fail to read JSON file at URL: \(url)")
+    return nil
+  }
+  
+  return JSON2Codable(json)
+}
+
 public func readJSON<T: Codable>(_ path: String) -> T?
 {
   guard let json = FS.readText(fromLocalPath: path) else
