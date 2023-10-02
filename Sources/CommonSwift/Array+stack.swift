@@ -7,14 +7,14 @@
 
 import Foundation
 
-extension Array
+public extension Array
 {
-  public mutating func push(_ e: Element)
+  mutating func push(_ e: Element)
   {
     self.append(e)
   }
   
-  public mutating func pop() -> Element?
+  mutating func pop() -> Element?
   {
     return self.removeLast()
   }
