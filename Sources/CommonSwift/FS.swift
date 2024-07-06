@@ -71,12 +71,13 @@ public class FS
       #if os(macOS)
       try NSDictionary(dictionary: d).write(to: URL(fileURLWithPath:path))
       #else
-      try NSDictionary(dictionary: d).write(to: URL(fileURLWithPath:path), atomically: true)
+      try NSDictionary(dictionary: d).write(to: URL(fileURLWithPath:path))
       #endif
     }
     catch
     {
-      print("Model fail to write \(path)")
+      Log.error("Dictionary fail to write to: \(path)")
+      Log.error("error: \(error)")
     }
   }
   
