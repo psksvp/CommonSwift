@@ -70,3 +70,39 @@ public func writeJSON<T: Codable>(_ obj: T, toFilePath: String) -> Bool
   
   return true
 }
+
+extension FS
+{
+  public class func readJSON<T: Codable>(_ url: URL) -> T?
+  {
+    guard let json = FS.readText(fromURL: url) else
+    {
+      Log.error("Fail to read JSON file at URL: \(url)")
+      return nil
+    }
+    
+    return JSON2Codable(json)
+  }
+
+  public class func readJSON<T: Codable>(_ path: String) -> T?
+  {
+    guard let json = FS.readText(fromLocalPath: path) else
+    {
+      Log.error("Fail to read JSON file: \(path)")
+      return nil
+    }
+    
+    return JSON2Codable(json)
+  }
+
+  @discardableResult
+  public class func writeJSON<T: Codable>(_ obj: T, toFilePath: String) -> Bool
+  {
+    guard let json = codeable2JSON(obj) else {return false}
+    
+    // TODO: fix this to return boolean
+    FS.writeText(inString: json, toPath: toFilePath)
+    
+    return true
+  }
+}
