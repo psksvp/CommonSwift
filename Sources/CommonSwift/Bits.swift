@@ -75,6 +75,21 @@ public func binary<T: FixedWidthInteger>(_ n: T) -> String
   }
 }
 
+public extension Int32
+{
+  init(_ d: UInt8, _ c: UInt8, _ b: UInt8, _ a: UInt8)
+  {
+    self.init( Int32(d) << 24 | Int32(c) << 16 | Int32(b) << 8 | Int32(a))
+  }
+
+  var bytes: [UInt8]
+  {
+    [UInt8((self >> 24) & 0xFF),
+     UInt8((self >> 16) & 0xFF),
+     UInt8((self >> 8) & 0xFF),
+     UInt8(self & 0xFF)]
+  }
+}
  
 
 public extension UInt16
