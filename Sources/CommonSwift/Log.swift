@@ -50,8 +50,6 @@ public class Log
 {
   private init() {}
   
-  public static var logs = [String]()
-
   public static var logLimit = 20
   
   public class func fatal(_ msg:String,
@@ -59,8 +57,7 @@ public class Log
                           _ line: Int = #line)
   {
     let log = "FatalError(\(function):\(line)): \(msg)"
-    //logs.append(log, withLimit: logLimit)
-    NSLog(log)
+    print(log)
     fatalError(msg)
   }
   
@@ -69,8 +66,7 @@ public class Log
                           _ line: Int = #line) -> Void
   {
     let log = "Error(\(function):\(line)): \(msg)"
-    //logs.append(log, withLimit: logLimit)
-    NSLog(log)
+    print(log)
   }
   
   public class func warn(_ msg:String,
@@ -78,8 +74,7 @@ public class Log
                          _ line: Int = #line) -> Void
   {
     let log = "warn(\(function):\(line)): \(msg)"
-    //logs.append(log, withLimit: logLimit)
-    NSLog(log)
+    print(log)
   }
   
   public class func info(_ msg:String,
@@ -87,13 +82,6 @@ public class Log
                          _ line: Int = #line) -> Void
   {
     let log = "info(\(function):\(line)): \(msg)"
-    //logs.append(log, withLimit: logLimit)
-    NSLog(log)
+    print(log)
   }
-  
-  public class func save(_ p: String)
-  {
-    FS.writeText(inString: logs.joined(separator: "\n"), toPath: p)
-  }
-	
 }
