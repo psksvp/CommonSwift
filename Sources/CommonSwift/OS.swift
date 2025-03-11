@@ -218,7 +218,7 @@ public extension Collection where Element == String
       if !stderr.isEmpty
       {
         Log.info(stderr)
-        return nil
+        return stderr
       }
       return stdout
     }
@@ -236,99 +236,3 @@ public extension Collection where Element == String
 }
 #endif
 
-
-// remove, because this version needs runloop for it to work.
-/*
-@available(OSX 10.13, *)
-  public class SpawnInteractive
-  {
-    let outputPipe = Pipe()
-    let errorPipe = Pipe()
-    let inputPipe = Pipe()
-    let task = Process()
-    let outputHandler: (String, String) -> ()
-
-    private var  notID: Any?
-
-
-    public init(_ args:[String], outputHandler f:@escaping (String, String) -> ())
-    {
-      outputHandler = f
-      task.executableURL = URL(fileURLWithPath: args[0])
-      task.standardOutput = outputPipe
-      task.standardError = errorPipe
-      task.standardInput = inputPipe
-      if(args.count > 1) {  task.arguments = Array(args.dropFirst()) }
-
-      notID = NotificationCenter.default.addObserver(forName: .NSFileHandleDataAvailable, object: nil, queue: OperationQueue.main)
-              {
-
-                [unowned self] note in
-
-                let handle = note.object as! FileHandle
-                guard handle === outputPipe.fileHandleForReading ||
-                      handle === errorPipe.fileHandleForReading else
-                {
-                  Log.error("cannot obtain handle to out or err")
-                  return
-                }
-
-                defer { handle.waitForDataInBackgroundAndNotify() }
-                let data = handle.availableData
-                let str = String(decoding: data, as: UTF8.self)
-                if handle === outputPipe.fileHandleForReading
-                {
-                  outputHandler(str, "")
-                }
-                else
-                {
-                  outputHandler("", str)
-                }
-              }
-
-
-      do
-      {
-        try task.run()
-
-        outputPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
-        errorPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
-      }
-      catch let error as NSError
-      {
-        Log.error("OS.SpawnInteractive \(args) fail: \(error.localizedDescription)")
-      }
-    }
-
-    deinit
-    {
-      if let i = notID
-      {
-        NotificationCenter.default.removeObserver(i)
-      }
-      task.terminate()
-    }
-
-    public func pipe(_ s: String)
-    {
-      self.inputPipe.fileHandleForWriting.write("\(s)\n".data(using: .utf8)!)
-    }
-    
-    public func pipe(bytes: [UInt8])
-    {
-      let d = Data(bytes)
-      self.inputPipe.fileHandleForWriting.write(d)
-    }
-    
-    public func interrupt()
-    {
-      task.interrupt()
-    }
-    
-    public func terminate()
-    {
-      task.terminate()
-    }
-
-  }
- */
