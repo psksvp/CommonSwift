@@ -7,12 +7,13 @@
 
 import Foundation
 
-public func codeable2JSON<T: Codable>(_ obj: T) -> String?
+public func codeable2JSON<T: Codable>(_ obj: T,
+                                      outputFormatting: JSONEncoder.OutputFormatting = .prettyPrinted) -> String?
 {
   do
   {
     let jsonEnc = JSONEncoder()
-    jsonEnc.outputFormatting = .prettyPrinted
+    jsonEnc.outputFormatting = outputFormatting
     let data = try jsonEnc.encode(obj)
     return String(decoding: data, as: UTF8.self)
   }
