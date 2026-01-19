@@ -97,9 +97,11 @@ extension FS
   }
 
   @discardableResult
-  public class func writeJSON<T: Codable>(_ obj: T, toFilePath: String) -> Bool
+  public class func writeJSON<T: Codable>(_ obj: T,
+                                          toFilePath: String,
+                                          outputFormatting: JSONEncoder.OutputFormatting = .prettyPrinted) -> Bool
   {
-    guard let json = codeable2JSON(obj) else {return false}
+    guard let json = codeable2JSON(obj, outputFormatting: outputFormatting) else {return false}
     
     // TODO: fix this to return boolean
     FS.writeText(inString: json, toPath: toFilePath)
